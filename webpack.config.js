@@ -1,6 +1,6 @@
 const path = require('path');
 module.exports = {
-  entry: './components/Root.react.js',
+  entry: './src/index.js',
   output: {
     path: path.resolve('dist'),
     filename: 'bundle.js'
