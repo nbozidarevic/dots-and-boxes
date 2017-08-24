@@ -2,11 +2,12 @@
  * @flow
  */
 
-export type GameState = 'home' | 'game';
+export type GameState = 'home' | 'game' | 'completed';
 
 const GameStates = {
   HOME: 'home',
   GAME: 'game',
+  COMPLETED: 'completed',
 };
 
 export default GameStates;

@@ -2,12 +2,10 @@
  * @flow
  */
 
-export type Direction = 'up' | 'down' | 'left' | 'right';
+export type Direction = 'down' | 'right';
 
 const Directions = {
-  UP: 'up',
   DOWN: 'down',
-  LEFT: 'left',
   RIGHT: 'right',
 };
 

@@ -15,10 +15,17 @@ export default class Line {
     this.x = x;
     this.y = y;
     this.owner = null;
-
-    if (direction !== Directions.DOWN && direction !== Directions.RIGHT) {
-      throw 'Invalid line direction';
-    }
     this.direction = direction;
+  }
+
+  getOwner(): ?Player {
+    return this.owner;
+  }
+
+  setOwner(player: Player) {
+    if (!!this.owner) {
+      throw 'Line has already been selected';
+    }
+    this.owner = player;
   }
 }
