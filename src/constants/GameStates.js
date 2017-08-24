@@ -2,11 +2,11 @@
  * @flow
  */
 
-export type GameState = 'HOME' | 'GAME';
+export type GameState = 'home' | 'game';
 
 const GameStates = {
-  HOME: 'HOME',
-  GAME: 'GAME',
+  HOME: 'home',
+  GAME: 'game',
 };
 
 export default GameStates;

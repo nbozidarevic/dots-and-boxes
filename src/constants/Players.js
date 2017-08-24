@@ -2,11 +2,11 @@
  * @flow
  */
 
-export type Player = 'HUMAN' | 'GREEDY';
+export type Player = 'player_one' | 'player_two';
 
 const Players = {
-  HUMAN: 'HUMAN',
-  GREEDY: 'GREEDY',
+  PLAYER_ONE: 'player_one',
+  PLAYER_TWO: 'player_two',
 };
 
 export default Players;
