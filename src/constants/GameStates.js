@@ -2,6 +2,8 @@
  * @flow
  */
 
+'use strict';
+
 export type GameState = 'home' | 'game' | 'completed';
 
 const GameStates = {

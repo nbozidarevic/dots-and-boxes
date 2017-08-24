@@ -2,6 +2,8 @@
  * @flow
  */
 
+'use strict';
+
 export type Character = 'human' | 'greedy';
 
 const Characters = {

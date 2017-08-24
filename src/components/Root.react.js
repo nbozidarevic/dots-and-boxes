@@ -2,6 +2,8 @@
  * @ flow
  */
 
+'use strict';
+
 import GameStore from '../data/GameStore';
 import React from 'react';
 

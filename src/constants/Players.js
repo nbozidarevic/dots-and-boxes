@@ -2,6 +2,8 @@
  * @flow
  */
 
+'use strict';
+
 export type Player = 'player_one' | 'player_two';
 
 const Players = {

@@ -2,6 +2,8 @@
  * @flow
  */
 
+'use strict';
+
 import Directions, {type Direction} from '../constants/Directions';
 import GameStates, {type GameState} from '../constants/GameStates';
 import Line from './Line'
