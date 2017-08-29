@@ -49,9 +49,9 @@ class GameStore extends ReduceStore {
 
   startGame(rows: number, cols: number): State {
     let lines = [];
-    for (let i = 0; i < rows; i++) {
+    for (let i = 0; i <= rows; i++) {
       lines[i] = [];
-      for (let j = 0; j < cols; j++) {
+      for (let j = 0; j <= cols; j++) {
         lines[i][j] = {};
         if (i !== rows - 1) {
           lines[i][j][Directions.DOWN] = new Line(i, j, Directions.DOWN);
