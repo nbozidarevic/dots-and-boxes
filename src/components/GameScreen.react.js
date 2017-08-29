@@ -29,7 +29,6 @@ class GameScreen extends React.Component<{}, State> {
       rows: GameStore.getState().rows,
       cols: GameStore.getState().cols,
       gameState: GameStore.getState().gameState,
-      player: GameStore.getState().currentPlayer,
     };
   }
 
@@ -47,7 +46,6 @@ class GameScreen extends React.Component<{}, State> {
   }
 
   _getLines(): Array<Line> {
-    let line;
     const lines = [];
     for (let i = 0; i <= this.state.rows; ++i) {
       for (let j = 0; j <= this.state.cols; ++j) {
