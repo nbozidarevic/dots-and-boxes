@@ -25,19 +25,22 @@ class Dot extends React.Component<Props, State> {
 
   static calculateState() {
     return {
-      rows: GameStore.getState().rows,
-      cols: GameStore.getState().cols,
+      rows: GameStore.getRows(),
+      cols: GameStore.getCols(),
     };
   }
 
   render() {
-    const top = 100 * this.props.row / this.state.rows;
-    const left = 100 * this.props.col / this.state.cols;
-    const style = {
-      left: left + '%',
-      top: top + '%',
-    };
-    return <div className="dot" style={style} />;
+    return <div className="dot" style={this._getStyle()} />;
+  }
+
+  _getStyle(): Object {
+    const {row, col} = this.props;
+    const {rows, cols} = this.state;
+    return {
+      top: 100 * row / rows + '%',
+      left: 100 * col / cols + '%',
+    }
   }
 }
 

@@ -46,43 +46,34 @@ class GameScreen extends React.Component<{}, State> {
     );
   }
 
-  _getLines = (): Array<Line> => {
+  _getLines(): Array<Line> {
     let line;
     const lines = [];
     for (let i = 0; i <= this.state.rows; ++i) {
       for (let j = 0; j <= this.state.cols; ++j) {
-        line = GameStore.getLine(i, j, Directions.DOWN);
-        if (line) {
-          lines.push(
-            <Line
-              row={line.row}
-              col={line.col}
-              direction={line.direction}
-              key={line.row + ' ' + line.col + ' ' + line.direction}
-            />
-          );
-        }
-        line = GameStore.getLine(i, j, Directions.RIGHT);
-        if (line) {
-          lines.push(
-            <Line
-              row={line.row}
-              col={line.col}
-              direction={line.direction}
-              key={line.row + ' ' + line.col + ' ' + line.direction}
-            />
-          );
+        for (let direction in Directions) {
+          const line = GameStore.getLine(i, j, Directions[direction]);
+          if (line) {
+            lines.push(
+              <Line
+                row={i}
+                col={j}
+                direction={direction}
+                key={i + ' ' + j + ' ' + direction}
+              />
+            );
+          }
         }
       }
     }
     return lines;
   };
 
-  _getDots = (): Array<Dot> => {
+  _getDots(): Array<Dot> {
     const dots = [];
     for (let i = 0; i <= this.state.rows; ++i) {
       for (let j = 0; j <= this.state.cols; ++j) {
-        dots.push(<Dot row={i} col={j} />);
+        dots.push(<Dot row={i} col={j} key={i + '_' + j} />);
       }
     }
     return dots;
