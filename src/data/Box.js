@@ -29,4 +29,14 @@ export default class Box {
     }
     return owner;
   }
+
+  getSelectedLineCount(): number {
+    let count = 0;
+    this.lines.forEach(line => {
+      if (line.getOwner()) {
+        ++count;
+      }
+    });
+    return count;
+  }
 }

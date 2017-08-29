@@ -5,6 +5,8 @@
 'use strict';
 
 import ActionTypes from '../constants/ActionTypes';
+import Behaviour from '../behaviours/Behaviour.js';
+import Characters, {type Character} from '../constants/Characters';
 import Directions, {type Direction} from '../constants/Directions';
 import Dispatcher from './Dispatcher';
 import {Record} from 'immutable';
@@ -21,6 +23,10 @@ const State = Record({
   rows: 0,
   cols: 0,
   iteration: 0,
+  characters: {
+    player_one: null,
+    player_two: null,
+  }
 });
 
 class GameStore extends ReduceStore {
@@ -65,6 +71,10 @@ class GameStore extends ReduceStore {
       rows: rows,
       cols: cols,
       iteration: 0,
+      characters: {
+        player_one: Characters.HUMAN,
+        player_two: Characters.GREEDY,
+      },
     });
   }
 
@@ -91,7 +101,7 @@ class GameStore extends ReduceStore {
     } else if (this.getBoxesForLine(line).every(box => !box.getOwner())) {
       state = state.set(
         'currentPlayer',
-        state.currentPlayer === Players.PLAYER_ONE
+        this.getCurrentPlayer() === Players.PLAYER_ONE
           ? Players.PLAYER_TWO
           : Players.PLAYER_ONE,
       );
@@ -101,15 +111,7 @@ class GameStore extends ReduceStore {
   }
 
   isGameComplete(): boolean {
-    return this.getState().lines.every(a => a.every(b => {
-      if (b.down && !b.down.getOwner()) {
-        return false;
-      }
-      if (b.right && !b.right.getOwner()) {
-        return false;
-      }
-      return true;
-    }));
+    return this.getAllLines().every(line => !!line.getOwner());
   }
 
   getRows(): number {
@@ -120,12 +122,33 @@ class GameStore extends ReduceStore {
     return this.getState().cols;
   }
 
-  getLine(row: number, col: number, direction: Direction) {
+  getLine(row: number, col: number, direction: Direction): Line {
     return this.getState().lines[row][col][direction];
+  }
+
+  getAllLines(): Array<Line> {
+    const lines = [];
+    this.getState().lines.forEach(a => a.forEach(b => {
+      if (b[Directions.DOWN]) {
+        lines.push(b[Directions.DOWN]);
+      }
+      if (b[Directions.RIGHT]) {
+        lines.push(b[Directions.RIGHT]);
+      }
+    }));
+    return lines;
+  }
+
+  getAllAvailableLines(): Array<Line> {
+    return this.getAllLines().filter(line => !line.getOwner());
   }
 
   getCurrentPlayer(): Player {
     return this.getState().currentPlayer;
+  }
+
+  getCurrentCharacter(): Character {
+    return this.getState().characters[this.getState().currentPlayer];
   }
 
   getCurrentIteration(): number {
@@ -158,6 +181,10 @@ class GameStore extends ReduceStore {
     potentialBoxes.forEach(box => {if (box) {boxes.push(box)}});
 
     return boxes;
+  }
+
+  getGameState(): GameState {
+    return this.getState().gameState;
   }
 }
 

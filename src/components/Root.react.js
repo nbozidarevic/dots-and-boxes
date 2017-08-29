@@ -4,6 +4,7 @@
 
 'use strict';
 
+import BehaviourStore from '../behaviours/BehaviourStore';
 import GameScreen from '../components/GameScreen.react';
 import HomeScreen from '../components/HomeScreen.react';
 import GameStore from '../data/GameStore';
