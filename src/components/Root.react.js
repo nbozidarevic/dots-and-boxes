@@ -4,37 +4,18 @@
 
 'use strict';
 
-import Actions from '../data/Actions';
+import GameScreen from '../components/GameScreen.react';
+import HomeScreen from '../components/HomeScreen.react';
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
 import React from 'react';
 
-document.debug = Actions;
-
-class Root extends React.Component {
-  static getStores() {
-    return [GameStore];
-  }
-
-  static calculateState() {
-    return {
-      rows: GameStore.getState().rows,
-      cols: GameStore.getState().cols,
-      player: GameStore.getState().currentPlayer,
-      state: GameStore.getState().gameState,
-    };
-  }
-
+export default class Root extends React.Component {
   render() {
     return (
       <div>
-        {this.state.rows}<br />
-        {this.state.cols}<br />
-        {this.state.player}<br />
-        {this.state.state}
+        <HomeScreen />
+        <GameScreen />
       </div>
     );
   }
 }
-
-export default Container.create(Root);
