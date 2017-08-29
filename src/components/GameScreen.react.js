@@ -5,7 +5,9 @@
 'use strict';
 
 import Actions from '../data/Actions';
+import Directions from '../constants/Directions';
 import Dot from '../components/Dot.react';
+import Line from '../components/Line.react';
 import GameStates, {type GameState} from '../constants/GameStates';
 import GameStore from '../data/GameStore';
 import {Container} from 'flux/utils';
@@ -37,10 +39,41 @@ class GameScreen extends React.Component<{}, State> {
     }
     return (
       <div className="board">
+        {this._getLines()}
         {this._getDots()}
       </div>
     );
   }
+
+  _getLines = (): Array<Line> => {
+    let line;
+    const lines = [];
+    for (let i = 0; i <= this.state.rows; ++i) {
+      for (let j = 0; j <= this.state.cols; ++j) {
+        line = GameStore.getLine(i, j, Directions.DOWN);
+        if (line) {
+          lines.push(
+            <Line
+              row={line.x}
+              col={line.y}
+              direction={line.direction}
+            />
+          );
+        }
+        line = GameStore.getLine(i, j, Directions.RIGHT);
+        if (line) {
+          lines.push(
+            <Line
+              row={line.x}
+              col={line.y}
+              direction={line.direction}
+            />
+          );
+        }
+      }
+    }
+    return lines;
+  };
 
   _getDots = (): Array<Dot> => {
     const dots = [];

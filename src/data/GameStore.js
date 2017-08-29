@@ -53,10 +53,10 @@ class GameStore extends ReduceStore {
       lines[i] = [];
       for (let j = 0; j <= cols; j++) {
         lines[i][j] = {};
-        if (i !== rows - 1) {
+        if (i !== rows) {
           lines[i][j][Directions.DOWN] = new Line(i, j, Directions.DOWN);
         }
-        if (j !== cols - 1) {
+        if (j !== cols) {
           lines[i][j][Directions.RIGHT] = new Line(i, j, Directions.RIGHT);
         }
       }
@@ -111,6 +111,10 @@ class GameStore extends ReduceStore {
       }
       return true;
     }));
+  }
+
+  getLine(i: number, j: number, direction: Direction) {
+    return this.getState().lines[i][j][direction];
   }
 }
 

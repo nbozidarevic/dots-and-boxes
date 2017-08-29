@@ -20,3 +20,14 @@
   border-radius: 16px;
   margin: -8px 0 0 -8px;
 }
+
+.line {
+  background-color: #aaa;
+  margin: -5px 0 0 -5px;
+  position: absolute;
+  cursor: pointer;
+}
+
+.line:hover {
+  background-color: #666;
+}
