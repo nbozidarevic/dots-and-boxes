@@ -5,6 +5,7 @@
 'use strict';
 
 import Actions from '../data/Actions';
+import Box from '../components/Box.react';
 import Directions from '../constants/Directions';
 import Dot from '../components/Dot.react';
 import Line from '../components/Line.react';
@@ -39,11 +40,22 @@ class GameScreen extends React.Component<{}, State> {
     }
     return (
       <div className="board">
+        {this._getBoxes()}
         {this._getLines()}
         {this._getDots()}
       </div>
     );
   }
+
+  _getBoxes(): Array<Box> {
+    const boxes = [];
+    for (let i = 0; i < this.state.rows; ++i) {
+      for (let j = 0; j < this.state.cols; ++j) {
+        boxes.push(<Box row={i} col={j} key={i + '_' + j} />);
+      }
+    }
+    return boxes;
+  };
 
   _getLines(): Array<Line> {
     const lines = [];
