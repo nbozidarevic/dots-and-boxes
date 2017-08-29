@@ -56,7 +56,7 @@ class GameScreen extends React.Component<{}, State> {
               <Line
                 row={i}
                 col={j}
-                direction={direction}
+                direction={Directions[direction]}
                 key={i + ' ' + j + ' ' + direction}
               />
             );
