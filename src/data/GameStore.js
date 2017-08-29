@@ -72,7 +72,7 @@ class GameStore extends ReduceStore {
   }
 
   selectLine(state: State, i: number, j: number, direction: Direction) {
-    if (i >= state.rows || i < 0 || j >= state.cols || j < 0) {
+    if (i > state.rows || i < 0 || j > state.cols || j < 0) {
       throw 'Invalid coordinates for the line at the given starting point';
     }
 

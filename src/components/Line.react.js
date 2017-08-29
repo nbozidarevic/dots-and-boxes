@@ -4,6 +4,7 @@
 
 'use strict';
 
+import Actions from '../data/Actions';
 import Directions, {type Direction} from '../constants/Directions';
 import GameStore from '../data/GameStore';
 import {Container} from 'flux/utils';
@@ -51,9 +52,12 @@ class Line extends React.Component<Props, State> {
       style.right = (100 - 100 * (this.props.col + 1) / this.state.cols) + '%';
       style.height = 10;
     }
-    console.log(style);
-    return <div className="line" style={style} />;
+    return <div className="line" style={style} onClick={this._selectLine} />;
   }
+
+  _selectLine = () => {
+    Actions.selectLine(this.props.row, this.props.col, this.props.direction);
+  };
 }
 
 Line = Container.create(Line);
