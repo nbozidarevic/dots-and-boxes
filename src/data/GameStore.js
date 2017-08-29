@@ -113,8 +113,16 @@ class GameStore extends ReduceStore {
     }));
   }
 
-  getLine(i: number, j: number, direction: Direction) {
-    return this.getState().lines[i][j][direction];
+  getRows(): number {
+    return this.getState().rows;
+  }
+
+  getCols(): number {
+    return this.getState().cols;
+  }
+
+  getLine(row: number, col: number, direction: Direction) {
+    return this.getState().lines[row][col][direction];
   }
 }
 

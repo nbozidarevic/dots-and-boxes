@@ -25,13 +25,21 @@
   background-color: #aaa;
   margin: -5px 0 0 -5px;
   position: absolute;
+}
+
+.line-interactive:hover {
+  background-color: #666;
   cursor: pointer;
 }
 
-.line:hover {
-  background-color: #666;
+.line-selected {
+  background-color: #000;
 }
 
-.line.selected {
-  background-color: #000;
+.line-horiz {
+  height: 10px;
+}
+
+.line-vert {
+  width: 10px;
 }

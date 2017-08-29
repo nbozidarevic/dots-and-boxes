@@ -15,12 +15,12 @@ type Props = {
   row: number,
   col: number,
   direction: Direction,
-  owner: ?Player,
 }
 
 type State = {
   rows: number,
   cols: number,
+  owner: ?Player,
 }
 
 class Line extends React.Component<Props, State> {
@@ -28,48 +28,74 @@ class Line extends React.Component<Props, State> {
     return [GameStore];
   }
 
-  static calculateState() {
+  static calculateState(prevState: State, props: Props) {
     return {
-      rows: GameStore.getState().rows,
-      cols: GameStore.getState().cols,
-      player: GameStore.getState().currentPlayer,
+      rows: GameStore.getRows(),
+      cols: GameStore.getCols(),
+      owner: GameStore.getLine(
+        props.row,
+        props.col,
+        props.direction,
+      ).getOwner(),
     };
   }
 
   render() {
-    const top = 100 * this.props.row / this.state.rows;
-    const left = 100 * this.props.col / this.state.cols;
-    const style = {
-      left: left + '%',
-      top: top + '%',
-      bottom: undefined,
+    return (
+      <div
+        className={this._getClassName()}
+        style={this._getStyle()}
+        onClick={this._selectLine}
+      />
+    );
+  }
+
+  _getClassName(): string {
+    const {direction} = this.props;
+    const {owner} = this.state;
+    const classNames = ['line'];
+
+    if (owner) {
+      classNames.push('line-selected');
+    } else {
+      classNames.push('line-interactive');
+    }
+
+    if (direction === Directions.DOWN) {
+      classNames.push('line-vert');
+    } else if (this.props.direction === Directions.RIGHT) {
+      classNames.push('line-horiz');
+    }
+
+    return classNames.join(' ');
+  }
+
+  _getStyle(): Object {
+    const {row, col, direction} = this.props;
+    const {rows, cols, owner} = this.state;
+
+    let style = {
+      top: 100 * row / rows + '%',
       right: undefined,
-      width: undefined,
-      height: undefined,
+      bottom: undefined,
+      left: 100 * col / cols + '%',
     };
 
-    if (this.props.direction === Directions.DOWN) {
-      style.bottom = (100 - 100 * (this.props.row + 1) / this.state.rows) + '%';
-      style.width = 10;
-    }
-    if (this.props.direction === Directions.RIGHT) {
-      style.right = (100 - 100 * (this.props.col + 1) / this.state.cols) + '%';
-      style.height = 10;
+    if (direction === Directions.DOWN) {
+      style.bottom = 100 * (1 - (row + 1) / rows) + '%';
+    } else if (direction === Directions.RIGHT) {
+      style.right = 100 * (1 - (col + 1) / cols) + '%';
     }
 
-    let className = 'line ';
-    if (this.props.owner) {
-      className += 'selected';
-    }
-
-    return <div className={className} style={style} onClick={this._selectLine} />;
+    return style;
   }
 
   _selectLine = () => {
-    Actions.selectLine(this.props.row, this.props.col, this.props.direction);
+    const {row, col, direction} = this.props;
+    Actions.selectLine(row, col, direction);
   };
 }
 
-Line = Container.create(Line);
+Line = Container.create(Line, {withProps: true});
 
 export default Line;

@@ -55,10 +55,10 @@ class GameScreen extends React.Component<{}, State> {
         if (line) {
           lines.push(
             <Line
-              row={line.x}
-              col={line.y}
+              row={line.row}
+              col={line.col}
               direction={line.direction}
-              owner={line.owner}
+              key={line.row + ' ' + line.col + ' ' + line.direction}
             />
           );
         }
@@ -66,10 +66,10 @@ class GameScreen extends React.Component<{}, State> {
         if (line) {
           lines.push(
             <Line
-              row={line.x}
-              col={line.y}
+              row={line.row}
+              col={line.col}
               direction={line.direction}
-              owner={line.owner}
+              key={line.row + ' ' + line.col + ' ' + line.direction}
             />
           );
         }
