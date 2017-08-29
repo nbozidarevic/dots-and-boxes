@@ -12,12 +12,14 @@ export default class Line {
   col: number;
   owner: ?Player;
   direction: Direction;
+  iteration: number;
 
   constructor(row: number, col: number, direction: Direction) {
     this.row = row;
     this.col = col;
     this.owner = null;
     this.direction = direction;
+    this.iteration = -1;
   }
 
   getOwner(): ?Player {
@@ -29,5 +31,13 @@ export default class Line {
       throw 'Line has already been selected';
     }
     this.owner = player;
+  }
+
+  getIteration(): number {
+    return this.iteration;
+  }
+
+  setIteration(iteration: number) {
+    this.iteration = iteration;
   }
 }

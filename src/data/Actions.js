@@ -17,11 +17,11 @@ const Actions = {
     });
   },
 
-  selectLine(i: number, j: number, direction: Direction) {
+  selectLine(row: number, col: number, direction: Direction) {
     Dispatcher.dispatch({
       type: ActionTypes.SELECT_LINE,
-      i,
-      j,
+      row,
+      col,
       direction,
     });
   },

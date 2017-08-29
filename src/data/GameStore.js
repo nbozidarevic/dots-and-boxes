@@ -10,7 +10,8 @@ import Dispatcher from './Dispatcher';
 import {Record} from 'immutable';
 import {ReduceStore} from 'flux/utils';
 import GameStates, {type GameState} from '../constants/GameStates';
-import Line from './Line'
+import Box from './Box';
+import Line from './Line';
 import Players, {type Player} from '../constants/Players';
 
 const State = Record({
@@ -19,15 +20,10 @@ const State = Record({
   currentPlayer: Players.PLAYER_ONE,
   rows: 0,
   cols: 0,
+  iteration: 0,
 });
 
 class GameStore extends ReduceStore {
-  state: GameState;
-  lines: Array<Array<{down?: Line, right?: Line}>>;
-  currentPlayer: Player;
-  rows: number;
-  cols: number;
-
   constructor() {
     super(Dispatcher);
   }
@@ -39,7 +35,7 @@ class GameStore extends ReduceStore {
   reduce(state: State, action: Object) {
     switch (action.type) {
       case ActionTypes.SELECT_LINE:
-        return this.selectLine(state, action.i, action.j, action.direction);
+        return this.selectLine(state, action.row, action.col, action.direction);
       case ActionTypes.START_GAME:
         return this.startGame(action.rows, action.cols);
       default:
@@ -68,24 +64,27 @@ class GameStore extends ReduceStore {
       currentPlayer: Players.PLAYER_ONE,
       rows: rows,
       cols: cols,
+      iteration: 0,
     });
   }
 
   selectLine(state: State, i: number, j: number, direction: Direction) {
-    if (i > state.rows || i < 0 || j > state.cols || j < 0) {
+    if (i > this.getRows() || i < 0 || j > this.getCols() || j < 0) {
       throw 'Invalid coordinates for the line at the given starting point';
     }
 
-    const line = state.lines[i][j][direction];
+    const line = this.getLine(i, j, direction);
     if (!line) {
       throw 'Invalid direction for the line at the given starting point'
     }
 
-    if (!!line.getOwner()) {
+    if (line.getOwner()) {
       throw 'Line has already been selected';
     }
 
-    line.setOwner(state.currentPlayer);
+    line.setOwner(this.getCurrentPlayer());
+    line.setIteration(this.getCurrentIteration());
+    state = state.set('iteration', this.getCurrentIteration() + 1);
 
     if (this.isGameComplete()) {
       state = state.set('gameState', GameStates.COMPLETED);
@@ -123,6 +122,23 @@ class GameStore extends ReduceStore {
 
   getLine(row: number, col: number, direction: Direction) {
     return this.getState().lines[row][col][direction];
+  }
+
+  getCurrentPlayer(): Player {
+    return this.getState().currentPlayer;
+  }
+
+  getCurrentIteration(): number {
+    return this.getState().iteration;
+  }
+
+  getBox(row: number, col: number): Box {
+    return new Box([
+      this.getLine(row, col, Directions.DOWN),
+      this.getLine(row, col, Directions.RIGHT),
+      this.getLine(row, col + 1, Directions.DOWN),
+      this.getLine(row + 1, col, Directions.RIGHT),
+    ]);
   }
 }
 

@@ -35,7 +35,7 @@ class GameScreen extends React.Component<{}, State> {
 
   render() {
     const {gameState} = this.state;
-    if (gameState !== GameStates.GAME) {
+    if (gameState !== GameStates.GAME && gameState !== GameStates.COMPLETED) {
       return null;
     }
     return (
