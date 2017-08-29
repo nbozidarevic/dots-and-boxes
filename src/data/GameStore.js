@@ -88,7 +88,7 @@ class GameStore extends ReduceStore {
 
     if (this.isGameComplete()) {
       state = state.set('gameState', GameStates.COMPLETED);
-    } else {
+    } else if (this.getBoxesForLine(line).every(box => !box.getOwner())) {
       state = state.set(
         'currentPlayer',
         state.currentPlayer === Players.PLAYER_ONE
@@ -132,13 +132,32 @@ class GameStore extends ReduceStore {
     return this.getState().iteration;
   }
 
-  getBox(row: number, col: number): Box {
+  getBox(row: number, col: number): ?Box {
+    if (row < 0 || row >= this.getRows() || col < 0 || col >= this.getCols()) {
+      return null;
+    }
     return new Box([
       this.getLine(row, col, Directions.DOWN),
       this.getLine(row, col, Directions.RIGHT),
       this.getLine(row, col + 1, Directions.DOWN),
       this.getLine(row + 1, col, Directions.RIGHT),
     ]);
+  }
+
+  getBoxesForLine(line: Line): Array<Box> {
+    const potentialBoxes = [];
+    if (line.getDirection() === Directions.DOWN) {
+      potentialBoxes.push(this.getBox(line.getRow(), line.getCol()));
+      potentialBoxes.push(this.getBox(line.getRow(), line.getCol() - 1));
+    } else if (line.getDirection() == Directions.RIGHT) {
+      potentialBoxes.push(this.getBox(line.getRow(), line.getCol()));
+      potentialBoxes.push(this.getBox(line.getRow() - 1, line.getCol()));
+    }
+
+    const boxes = [];
+    potentialBoxes.forEach(box => {if (box) {boxes.push(box)}});
+
+    return boxes;
   }
 }
 

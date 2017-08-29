@@ -40,4 +40,16 @@ export default class Line {
   setIteration(iteration: number) {
     this.iteration = iteration;
   }
+
+  getDirection(): Direction {
+    return this.direction;
+  }
+
+  getRow(): number {
+    return this.row;
+  }
+
+  getCol(): number {
+    return this.col;
+  }
 }
