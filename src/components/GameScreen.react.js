@@ -12,6 +12,8 @@ import {Container} from 'flux/utils';
 import React from 'react';
 
 type State = {
+  rows: number,
+  cols: number,
   gameState: GameState,
 }
 
@@ -40,7 +42,7 @@ class GameScreen extends React.Component<{}, State> {
     );
   }
 
-  _getDots = (): Array<ReactNode> => {
+  _getDots = (): Array<Dot> => {
     const dots = [];
     for (let i = 0; i <= this.state.rows; ++i) {
       for (let j = 0; j <= this.state.cols; ++j) {

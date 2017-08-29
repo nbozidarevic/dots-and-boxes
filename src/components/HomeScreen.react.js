@@ -44,11 +44,15 @@ class HomeScreen extends React.Component<{}, State> {
   }
 
   _updateRows = (event: Event) => {
-    this.setState({rows: parseInt(event.target.value)});
+    if (event.target instanceof HTMLInputElement) {
+      this.setState({rows: parseInt(event.target.value)});
+    }
   };
 
   _updateCols = (event: Event) => {
-    this.setState({cols: parseInt(event.target.value)});
+    if (event.target instanceof HTMLInputElement) {
+      this.setState({cols: parseInt(event.target.value)});
+    }
   };
 
   _startGame = () => {
