@@ -23,8 +23,8 @@ class HomeScreen extends React.Component<{}, State> {
 
   static calculateState() {
     return {
-      rows: GameStore.getState().rows,
-      cols: GameStore.getState().cols,
+      rows: 1,
+      cols: 1,
       gameState: GameStore.getState().gameState,
     };
   }
@@ -36,9 +36,26 @@ class HomeScreen extends React.Component<{}, State> {
     }
     return (
       <div>
-        <input type="text" value={rows} onChange={this._updateRows} />
-        <input type="text" value={cols} onChange={this._updateCols} />
-        <input type="button" value="Play" onClick={this._startGame} />
+        Dimensions:
+        <input
+          type="number"
+          min={1}
+          max={21}
+          value={rows}
+          onChange={this._updateRows}
+        />
+        <input
+          type="number"
+          min={1}
+          max={21}
+          value={cols}
+          onChange={this._updateCols}
+        />
+        <input
+          type="button"
+          value="Play"
+          onClick={this._startGame}
+        />
       </div>
     );
   }
