@@ -31,3 +31,7 @@
 .line:hover {
   background-color: #666;
 }
+
+.line.selected {
+  background-color: #000;
+}

@@ -29,6 +29,7 @@ class GameScreen extends React.Component<{}, State> {
       rows: GameStore.getState().rows,
       cols: GameStore.getState().cols,
       gameState: GameStore.getState().gameState,
+      player: GameStore.getState().currentPlayer,
     };
   }
 
@@ -57,6 +58,7 @@ class GameScreen extends React.Component<{}, State> {
               row={line.x}
               col={line.y}
               direction={line.direction}
+              owner={line.owner}
             />
           );
         }
@@ -67,6 +69,7 @@ class GameScreen extends React.Component<{}, State> {
               row={line.x}
               col={line.y}
               direction={line.direction}
+              owner={line.owner}
             />
           );
         }

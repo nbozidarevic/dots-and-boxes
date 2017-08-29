@@ -9,11 +9,13 @@ import Directions, {type Direction} from '../constants/Directions';
 import GameStore from '../data/GameStore';
 import {Container} from 'flux/utils';
 import React from 'react';
+import Players, {type Player} from '../constants/Players';
 
 type Props = {
   row: number,
   col: number,
   direction: Direction,
+  owner: ?Player,
 }
 
 type State = {
@@ -30,6 +32,7 @@ class Line extends React.Component<Props, State> {
     return {
       rows: GameStore.getState().rows,
       cols: GameStore.getState().cols,
+      player: GameStore.getState().currentPlayer,
     };
   }
 
@@ -44,6 +47,7 @@ class Line extends React.Component<Props, State> {
       width: undefined,
       height: undefined,
     };
+
     if (this.props.direction === Directions.DOWN) {
       style.bottom = (100 - 100 * (this.props.row + 1) / this.state.rows) + '%';
       style.width = 10;
@@ -52,7 +56,13 @@ class Line extends React.Component<Props, State> {
       style.right = (100 - 100 * (this.props.col + 1) / this.state.cols) + '%';
       style.height = 10;
     }
-    return <div className="line" style={style} onClick={this._selectLine} />;
+
+    let className = 'line ';
+    if (this.props.owner) {
+      className += 'selected';
+    }
+
+    return <div className={className} style={style} onClick={this._selectLine} />;
   }
 
   _selectLine = () => {
