@@ -4,12 +4,12 @@
 
 'use strict';
 
-import Actions from '../data/Actions';
 import Behaviour from './Behaviour';
 import GameStore from '../data/GameStore';
+import Line from '../data/Line';
 
 export default class Greedy extends Behaviour {
-  run() {
+  run(): ?Line {
     const lines = [[], [], []];
 
     GameStore.getAllAvailableLines().forEach(line => {
@@ -32,8 +32,6 @@ export default class Greedy extends Behaviour {
       finalLines = lines[2];
     }
 
-    const line = finalLines[Math.floor(Math.random() * finalLines.length)];
-
-    Actions.selectLine(line.getRow(), line.getCol(), line.getDirection());
+    return this.getRandomLine(finalLines);
   }
 }

@@ -4,6 +4,7 @@
 
 'use strict';
 
+import Actions from '../data/Actions';
 import ActionTypes from '../constants/ActionTypes';
 import Behaviour from './Behaviour';
 import Characters, {type Character} from '../constants/Characters';
@@ -12,6 +13,7 @@ import GameStates from '../constants/GameStates';
 import GameStore from '../data/GameStore';
 import Greedy from './Greedy';
 import Human from './Human';
+import Random from './Random';
 import {ReduceStore} from 'flux/utils';
 
 class BehaviourStore extends ReduceStore {
@@ -31,19 +33,24 @@ class BehaviourStore extends ReduceStore {
     switch (action.type) {
       case ActionTypes.SELECT_LINE:
       case ActionTypes.START_GAME:
-        this.run();
+        setTimeout(() => this.run());
     }
     return state;
   }
 
   run() {
-    setTimeout(this.getBehaviour(GameStore.getCurrentCharacter()).run);
+    const line = this.getBehaviour(GameStore.getCurrentCharacter()).run();
+    if (line) {
+      Actions.selectLine(line.getRow(), line.getCol(), line.getDirection());
+    }
   }
 
   getBehaviour(character: Character): Behaviour {
     switch (character) {
       case Characters.HUMAN:
         return new Human();
+      case Characters.RANDOM:
+        return new Random();
       case Characters.GREEDY:
         return new Greedy();
       default:

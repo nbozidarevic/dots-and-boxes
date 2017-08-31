@@ -72,7 +72,7 @@ class GameStore extends ReduceStore {
       cols: cols,
       iteration: 0,
       characters: {
-        player_one: Characters.HUMAN,
+        player_one: Characters.GREEDY,
         player_two: Characters.GREEDY,
       },
     });
