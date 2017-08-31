@@ -15,6 +15,7 @@ import Greedy from './Greedy';
 import Human from './Human';
 import Random from './Random';
 import {ReduceStore} from 'flux/utils';
+import SmartGreedy from './SmartGreedy';
 
 class BehaviourStore extends ReduceStore {
   constructor() {
@@ -53,6 +54,8 @@ class BehaviourStore extends ReduceStore {
         return new Random();
       case Characters.GREEDY:
         return new Greedy();
+      case Characters.SMART_GREEDY:
+        return new SmartGreedy();
       default:
         throw new Error('Character not implemented');
     }
