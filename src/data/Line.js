@@ -4,6 +4,7 @@
 
 'use strict';
 
+import Box from './BoxNew';
 import Directions, {type Direction} from '../constants/Directions';
 import {type Player} from '../constants/Players';
 
@@ -19,6 +20,7 @@ export default class Line {
   owner: ?Player;
   direction: Direction;
   iteration: number;
+  boxes: Array<Box>
 
   constructor(row: number, col: number, direction: Direction) {
     this.row = row;
@@ -65,5 +67,9 @@ export default class Line {
 
   getCol(): number {
     return this.col;
+  }
+
+  addBox(box: Box) {
+    this.boxes.push(box);
   }
 }
