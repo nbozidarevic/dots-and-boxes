@@ -41,8 +41,8 @@ export default class Line {
   }
 
   setOwner(player: Player) {
-    if (!!this.owner) {
-      throw 'Line has already been selected';
+    if (this.owner !== null) {
+      throw new Error('Line has already been selected');
     }
     this.owner = player;
   }

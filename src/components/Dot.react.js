@@ -5,7 +5,7 @@
 'use strict';
 
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
+import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
 
 type Props = {
@@ -19,11 +19,11 @@ type State = {
 }
 
 class Dot extends React.Component<Props, State> {
-  static getStores() {
+  static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState() {
+  static calculateState(): State {
     return {
       rows: GameStore.getRows(),
       cols: GameStore.getCols(),

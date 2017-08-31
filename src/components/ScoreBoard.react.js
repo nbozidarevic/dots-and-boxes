@@ -6,41 +6,38 @@
 
 import {type Character} from '../constants/Characters';
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
+import {Container, ReduceStore} from 'flux/utils';
+import Players from '../constants/Players';
 import React from 'react';
 
 type State = {
-  player_one: Character,
-  player_two: Character,
-  score: {
-    player_one: number,
-    player_two: number,
-  },
+  characters: Array<Character>,
+  score: Array<number>,
 }
 
 class ScoreBoard extends React.Component<{}, State> {
-  static getStores() {
+  static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState() {
+  static calculateState(): State {
     return {
+      characters: GameStore.getCharacters(),
       score: GameStore.getScore(),
-      ...GameStore.getCharacters(),
     };
   }
 
   render() {
-    const {player_one, player_two, score} = this.state;
+    const {characters, score} = this.state;
     return (
       <div className="scoreboard">
-        {player_one}
+        {characters[Players.PLAYER_ONE]}
         {' '}
-        <span className="player_one">{score.player_one}</span>
+        <span className="player_one">{score[Players.PLAYER_ONE]}</span>
         :
-        <span className="player_two">{score.player_two}</span>
+        <span className="player_two">{score[Players.PLAYER_TWO]}</span>
         {' '}
-        {player_two}
+        {characters[Players.PLAYER_TWO]}
       </div>
     );
   }

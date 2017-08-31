@@ -8,7 +8,7 @@ import Actions from '../data/Actions';
 import Characters, {type Character} from '../constants/Characters';
 import GameStates, {type GameState} from '../constants/GameStates';
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
+import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
 
 type State = {
@@ -20,11 +20,11 @@ type State = {
 }
 
 class HomeScreen extends React.Component<{}, State> {
-  static getStores() {
+  static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState() {
+  static calculateState(): State {
     return {
       rows: 1,
       cols: 1,

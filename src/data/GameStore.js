@@ -23,10 +23,7 @@ const State = Record({
   rows: 0,
   cols: 0,
   iteration: 0,
-  characters: {
-    player_one: null,
-    player_two: null,
-  }
+  characters: [null, null],
 });
 
 class GameStore extends ReduceStore {
@@ -81,10 +78,7 @@ class GameStore extends ReduceStore {
       rows: rows,
       cols: cols,
       iteration: 0,
-      characters: {
-        player_one,
-        player_two,
-      },
+      characters: [player_one, player_two],
     });
   }
 
@@ -98,7 +92,7 @@ class GameStore extends ReduceStore {
       throw 'Invalid direction for the line at the given starting point'
     }
 
-    if (line.getOwner()) {
+    if (line.getOwner() !== null) {
       throw 'Line has already been selected';
     }
 
@@ -108,7 +102,9 @@ class GameStore extends ReduceStore {
 
     if (this.isGameComplete()) {
       state = state.set('gameState', GameStates.COMPLETED);
-    } else if (this.getBoxesForLine(line).every(box => !box.getOwner())) {
+    } else if (
+      this.getBoxesForLine(line).every(box => box.getOwner() === null)
+    ) {
       state = state.set(
         'currentPlayer',
         this.getCurrentPlayer() === Players.PLAYER_ONE
@@ -121,7 +117,7 @@ class GameStore extends ReduceStore {
   }
 
   isGameComplete(): boolean {
-    return this.getAllLines().every(line => !!line.getOwner());
+    return this.getAllLines().every(line => line.getOwner() !== null);
   }
 
   getRows(): number {
@@ -150,7 +146,7 @@ class GameStore extends ReduceStore {
   }
 
   getAllAvailableLines(): Array<Line> {
-    return this.getAllLines().filter(line => !line.getOwner());
+    return this.getAllLines().filter(line => line.getOwner() === null);
   }
 
   getCurrentPlayer(): Player {
@@ -158,7 +154,7 @@ class GameStore extends ReduceStore {
   }
 
   getCurrentCharacter(): Character {
-    return this.getState().characters[this.getState().currentPlayer];
+    return this.getState().characters[this.getCurrentPlayer()];
   }
 
   getCurrentIteration(): number {
@@ -193,24 +189,18 @@ class GameStore extends ReduceStore {
     return boxes;
   }
 
-  getCharacters(): {player_one: Character, player_two: Character} {
-    return {
-      player_one: this.getState().characters.player_one,
-      player_two: this.getState().characters.player_two,
-    };
+  getCharacters(): Array<Character> {
+    return this.getState().characters;
   }
 
-  getScore(): {player_one: number, player_two: number} {
-    const score = {
-      player_one: 0,
-      player_two: 0,
-    };
+  getScore(): Array<number> {
+    const score = [0, 0];
     for (let i = 0; i < this.getRows(); ++i) {
       for (let j = 0; j < this.getCols(); ++j) {
         const box = this.getBox(i, j);
         if (box) {
           const owner = box.getOwner();
-          if (owner) {
+          if (owner !== null && owner !== undefined) {
             ++score[owner];
           }
         }

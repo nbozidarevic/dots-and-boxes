@@ -7,7 +7,7 @@
 import Actions from '../data/Actions';
 import Directions, {type Direction} from '../constants/Directions';
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
+import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
 import Players, {type Player} from '../constants/Players';
 
@@ -23,11 +23,11 @@ type State = {
 }
 
 class Box extends React.Component<Props, State> {
-  static getStores() {
+  static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState(prevState: State, props: Props) {
+  static calculateState(prevState: State, props: Props): State {
     const box = GameStore.getBox(
       props.row,
       props.col,
@@ -52,8 +52,10 @@ class Box extends React.Component<Props, State> {
     const {owner} = this.state;
     const classNames = ['box'];
 
-    if (owner) {
-      classNames.push(owner);
+    if (owner === Players.PLAYER_ONE) {
+      classNames.push('player_one');
+    } else if (owner === Players.PLAYER_TWO) {
+      classNames.push('player_two');
     }
 
     return classNames.join(' ');

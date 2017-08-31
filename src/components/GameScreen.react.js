@@ -11,7 +11,7 @@ import Dot from '../components/Dot.react';
 import Line from '../components/Line.react';
 import GameStates, {type GameState} from '../constants/GameStates';
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
+import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
 import ScoreBoard from './ScoreBoard.react';
 
@@ -22,11 +22,11 @@ type State = {
 }
 
 class GameScreen extends React.Component<{}, State> {
-  static getStores() {
+  static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState() {
+  static calculateState(): State {
     return {
       rows: GameStore.getState().rows,
       cols: GameStore.getState().cols,

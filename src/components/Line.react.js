@@ -8,7 +8,7 @@ import Actions from '../data/Actions';
 import Characters, {type Character} from '../constants/Characters';
 import Directions, {type Direction} from '../constants/Directions';
 import GameStore from '../data/GameStore';
-import {Container} from 'flux/utils';
+import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
 import Players, {type Player} from '../constants/Players';
 
@@ -26,11 +26,11 @@ type State = {
 }
 
 class Line extends React.Component<Props, State> {
-  static getStores() {
+  static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState(prevState: State, props: Props) {
+  static calculateState(prevState: State, props: Props): State {
     return {
       rows: GameStore.getRows(),
       cols: GameStore.getCols(),
@@ -58,7 +58,7 @@ class Line extends React.Component<Props, State> {
     const {owner, currentCharacter} = this.state;
     const classNames = ['line'];
 
-    if (owner) {
+    if (owner !== null) {
       classNames.push('line-selected');
     } else if (currentCharacter === Characters.HUMAN) {
       classNames.push('line-interactive');

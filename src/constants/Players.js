@@ -4,11 +4,11 @@
 
 'use strict';
 
-export type Player = 'player_one' | 'player_two';
+export type Player = number;
 
 const Players = {
-  PLAYER_ONE: 'player_one',
-  PLAYER_TWO: 'player_two',
+  PLAYER_ONE: 0,
+  PLAYER_TWO: 1,
 };
 
 export default Players;

@@ -19,7 +19,7 @@ export default class Box {
     let ownerIteration = -1;
     for (let i = 0; i < 4; ++i) {
       const line = this.lines[i];
-      if (!line.getOwner()) {
+      if (line.getOwner() === null) {
         return null;
       }
       if (line.getIteration() > ownerIteration) {
@@ -33,7 +33,7 @@ export default class Box {
   getSelectedLineCount(): number {
     let count = 0;
     this.lines.forEach(line => {
-      if (line.getOwner()) {
+      if (line.getOwner() !== null) {
         ++count;
       }
     });

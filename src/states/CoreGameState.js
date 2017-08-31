@@ -4,9 +4,8 @@
 
 'use strict';
 
-import Directions, {type Direction} from '../constants/Directions';
 import Line, {type LineID} from '../data/Line';
-import Players, {type Player} from '../constants/Players';
+import Players from '../constants/Players';
 import {type Character} from '../constants/Characters';
 
 export default class CoreGameState {
@@ -58,8 +57,8 @@ export default class CoreGameState {
     return new CoreGameState(
       rows,
       cols,
-      players[0],
-      players[1],
+      players[Players.PLAYER_ONE],
+      players[Players.PLAYER_TWO],
       lineLog,
     );
   }
