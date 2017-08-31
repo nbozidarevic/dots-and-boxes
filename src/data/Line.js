@@ -7,6 +7,12 @@
 import Directions, {type Direction} from '../constants/Directions';
 import {type Player} from '../constants/Players';
 
+export type LineID = {
+  row: number,
+  col: number,
+  dir: Direction,
+};
+
 export default class Line {
   row: number;
   col: number;
@@ -20,6 +26,14 @@ export default class Line {
     this.owner = null;
     this.direction = direction;
     this.iteration = -1;
+  }
+
+  getID(): LineID {
+    return {
+      row: this.row,
+      col: this.col,
+      dir: this.direction,
+    };
   }
 
   getOwner(): ?Player {
