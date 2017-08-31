@@ -11,12 +11,12 @@ const PLAYER_TWO = Characters.GREEDY;
 const LINE_LOG = [
   {row: 0, col: 0, dir: Directions.DOWN},
   {row: 0, col: 0, dir: Directions.RIGHT},
-  {row: 2, col: 2, dir: Directions.DOWN},
+  {row: 2, col: 2, dir: Directions.UP},
 ];
 const STRING_DATA =
   '{' +
   '"rows":2,"cols":3,"players":["human","greedy"],'+
-  '"lineLog":[{"row":0,"col":0,"dir":"down"},{"row":0,"col":0,"dir":"right"},{"row":2,"col":2,"dir":"down"}]'+
+  '"lineLog":[{"row":0,"col":0,"dir":2},{"row":0,"col":0,"dir":1},{"row":2,"col":2,"dir":0}]'+
   '}';
 
 test('the constructor correctly initializes the game state', () => {
