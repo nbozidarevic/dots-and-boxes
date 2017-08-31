@@ -43,13 +43,23 @@ class GameStore extends ReduceStore {
       case ActionTypes.SELECT_LINE:
         return this.selectLine(state, action.row, action.col, action.direction);
       case ActionTypes.START_GAME:
-        return this.startGame(action.rows, action.cols);
+        return this.startGame(
+          action.rows,
+          action.cols,
+          action.player_one,
+          action.player_two,
+        );
       default:
         return state;
     }
   }
 
-  startGame(rows: number, cols: number): State {
+  startGame(
+    rows: number,
+    cols: number,
+    player_one: Character,
+    player_two: Character,
+  ): State {
     let lines = [];
     for (let i = 0; i <= rows; i++) {
       lines[i] = [];
@@ -72,8 +82,8 @@ class GameStore extends ReduceStore {
       cols: cols,
       iteration: 0,
       characters: {
-        player_one: Characters.SMART_GREEDY,
-        player_two: Characters.SMART_GREEDY,
+        player_one,
+        player_two,
       },
     });
   }

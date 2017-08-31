@@ -57,7 +57,7 @@ class BehaviourStore extends ReduceStore {
       case Characters.SMART_GREEDY:
         return new SmartGreedy();
       default:
-        throw new Error('Character not implemented');
+        throw new Error('Character ' + character + ' not implemented');
     }
   }
 }
