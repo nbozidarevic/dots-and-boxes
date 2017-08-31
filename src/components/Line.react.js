@@ -5,6 +5,7 @@
 'use strict';
 
 import Actions from '../data/Actions';
+import Characters, {type Character} from '../constants/Characters';
 import Directions, {type Direction} from '../constants/Directions';
 import GameStore from '../data/GameStore';
 import {Container} from 'flux/utils';
@@ -21,6 +22,7 @@ type State = {
   rows: number,
   cols: number,
   owner: ?Player,
+  currentCharacter: Character,
 }
 
 class Line extends React.Component<Props, State> {
@@ -37,6 +39,7 @@ class Line extends React.Component<Props, State> {
         props.col,
         props.direction,
       ).getOwner(),
+      currentCharacter: GameStore.getCharacters()[GameStore.getCurrentPlayer()],
     };
   }
 
@@ -52,12 +55,12 @@ class Line extends React.Component<Props, State> {
 
   _getClassName(): string {
     const {direction} = this.props;
-    const {owner} = this.state;
+    const {owner, currentCharacter} = this.state;
     const classNames = ['line'];
 
     if (owner) {
       classNames.push('line-selected');
-    } else {
+    } else if (currentCharacter === Characters.HUMAN) {
       classNames.push('line-interactive');
     }
 
@@ -92,6 +95,10 @@ class Line extends React.Component<Props, State> {
 
   _selectLine = () => {
     const {row, col, direction} = this.props;
+    const {currentCharacter} = this.state;
+    if (currentCharacter !== Characters.HUMAN) {
+      return;
+    }
     Actions.selectLine(row, col, direction);
   };
 }
