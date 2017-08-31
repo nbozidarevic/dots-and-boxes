@@ -193,6 +193,32 @@ class GameStore extends ReduceStore {
     return boxes;
   }
 
+  getCharacters(): {player_one: Character, player_two: Character} {
+    return {
+      player_one: this.getState().characters.player_one,
+      player_two: this.getState().characters.player_two,
+    };
+  }
+
+  getScore(): {player_one: number, player_two: number} {
+    const score = {
+      player_one: 0,
+      player_two: 0,
+    };
+    for (let i = 0; i < this.getRows(); ++i) {
+      for (let j = 0; j < this.getCols(); ++j) {
+        const box = this.getBox(i, j);
+        if (box) {
+          const owner = box.getOwner();
+          if (owner) {
+            ++score[owner];
+          }
+        }
+      }
+    }
+    return score;
+  }
+
   getGameState(): GameState {
     return this.getState().gameState;
   }

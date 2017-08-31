@@ -13,6 +13,7 @@ import GameStates, {type GameState} from '../constants/GameStates';
 import GameStore from '../data/GameStore';
 import {Container} from 'flux/utils';
 import React from 'react';
+import ScoreBoard from './ScoreBoard.react';
 
 type State = {
   rows: number,
@@ -39,10 +40,13 @@ class GameScreen extends React.Component<{}, State> {
       return null;
     }
     return (
-      <div className="board">
-        {this._getBoxes()}
-        {this._getLines()}
-        {this._getDots()}
+      <div className="game">
+        <ScoreBoard />
+        <div className="board">
+          {this._getBoxes()}
+          {this._getLines()}
+          {this._getDots()}
+        </div>
       </div>
     );
   }
