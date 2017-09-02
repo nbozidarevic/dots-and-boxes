@@ -20,6 +20,7 @@
 
 .board {
   flex: 1;
+  margin: 50px;
   position: relative;
 }
 
@@ -30,12 +31,14 @@
 }
 
 .line {
-  background-color: #ddd;
-  margin: -5px 0 0 -5px;
+  background-clip: padding-box;
+  background-color: #fff;
+  border-color: transparent;
+  border-style: solid;
 }
 
 .line-interactive:hover {
-  background-color: #666;
+  background-color: #5a5668;
   cursor: pointer;
 }
 
@@ -44,25 +47,29 @@
 }
 
 .line-horiz {
-  height: 10px;
+  height: 6px;
+  border-width: 16px 0;
+  margin: -19px 0 0 -3px;
 }
 
 .line-vert {
-  width: 10px;
+  width: 6px;
+  border-width: 0 16px;
+  margin: -3px 0 0 -19px;
 }
 
 .dot {
-  background-color: #000;
-  width: 16px;
-  height: 16px;
-  border-radius: 16px;
-  margin: -8px 0 0 -8px;
+  background-color: #5a5668;
+  width: 14px;
+  height: 14px;
+  border-radius: 14px;
+  margin: -7px 0 0 -7px;
 }
 
 .player_one {
-  background-color: green;
+  background-color: #c1ddda;
 }
 
 .player_two {
-  background-color: red;
+  background-color: #facaba;
 }
