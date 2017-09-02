@@ -9,7 +9,7 @@ import ActionTypes from '../constants/ActionTypes';
 import Behaviour from './Behaviour';
 import Characters, {type Character} from '../constants/Characters';
 import Dispatcher from '../data/Dispatcher';
-import GameStates from '../constants/GameStates';
+import UIStates from '../constants/UIStates';
 import GameStore from '../data/GameStore';
 import Greedy from './Greedy';
 import Human from './Human';
@@ -28,7 +28,7 @@ class BehaviourStore extends ReduceStore {
 
   reduce(state: Object, action: Object) {
     this.getDispatcher().waitFor([GameStore.getDispatchToken()]);
-    if (GameStore.getGameState() !== GameStates.GAME) {
+    if (GameStore.getUIState() !== UIStates.GAME) {
       return state;
     }
     switch (action.type) {

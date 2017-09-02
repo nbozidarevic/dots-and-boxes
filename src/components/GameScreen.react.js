@@ -9,7 +9,7 @@ import Box from '../components/Box.react';
 import Directions from '../constants/Directions';
 import Dot from '../components/Dot.react';
 import Line from '../components/Line.react';
-import GameStates, {type GameState} from '../constants/GameStates';
+import UIStates, {type UIState} from '../constants/UIStates';
 import GameStore from '../data/GameStore';
 import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
@@ -18,7 +18,7 @@ import ScoreBoard from './ScoreBoard.react';
 type State = {
   rows: number,
   cols: number,
-  gameState: GameState,
+  gameState: UIState,
 }
 
 class GameScreen extends React.Component<{}, State> {
@@ -36,7 +36,7 @@ class GameScreen extends React.Component<{}, State> {
 
   render() {
     const {gameState} = this.state;
-    if (gameState !== GameStates.GAME && gameState !== GameStates.COMPLETED) {
+    if (gameState !== UIStates.GAME && gameState !== UIStates.COMPLETED) {
       return null;
     }
     return (

@@ -11,13 +11,13 @@ import Directions, {type Direction} from '../constants/Directions';
 import Dispatcher from './Dispatcher';
 import {Record} from 'immutable';
 import {ReduceStore} from 'flux/utils';
-import GameStates, {type GameState} from '../constants/GameStates';
+import UIStates, {type UIState} from '../constants/UIStates';
 import Box from './Box';
 import Line from './Line';
 import Players, {type Player} from '../constants/Players';
 
 const State = Record({
-  gameState: GameStates.HOME,
+  gameState: UIStates.HOME,
   lines: [],
   currentPlayer: Players.PLAYER_ONE,
   rows: 0,
@@ -72,7 +72,7 @@ class GameStore extends ReduceStore {
     }
 
     return new State({
-      gameState: GameStates.GAME,
+      gameState: UIStates.GAME,
       lines: lines,
       currentPlayer: Players.PLAYER_ONE,
       rows: rows,
@@ -101,7 +101,7 @@ class GameStore extends ReduceStore {
     state = state.set('iteration', this.getCurrentIteration() + 1);
 
     if (this.isGameComplete()) {
-      state = state.set('gameState', GameStates.COMPLETED);
+      state = state.set('gameState', UIStates.COMPLETED);
     } else if (
       this.getBoxesForLine(line).every(box => box.getOwner() === null)
     ) {
@@ -209,7 +209,7 @@ class GameStore extends ReduceStore {
     return score;
   }
 
-  getGameState(): GameState {
+  getUIState(): UIState {
     return this.getState().gameState;
   }
 }

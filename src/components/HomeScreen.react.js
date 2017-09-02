@@ -6,7 +6,7 @@
 
 import Actions from '../data/Actions';
 import Characters, {type Character} from '../constants/Characters';
-import GameStates, {type GameState} from '../constants/GameStates';
+import UIStates, {type UIState} from '../constants/UIStates';
 import GameStore from '../data/GameStore';
 import {Container, ReduceStore} from 'flux/utils';
 import React from 'react';
@@ -14,7 +14,7 @@ import React from 'react';
 type State = {
   rows: number,
   cols: number,
-  gameState: GameState,
+  gameState: UIState,
   player_one: Character,
   player_two: Character,
 }
@@ -36,7 +36,7 @@ class HomeScreen extends React.Component<{}, State> {
 
   render() {
     const {rows, cols, gameState, player_one, player_two} = this.state;
-    if (gameState !== GameStates.HOME) {
+    if (gameState !== UIStates.HOME) {
       return null;
     }
     return (
