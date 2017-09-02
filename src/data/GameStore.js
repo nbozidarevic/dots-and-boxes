@@ -9,12 +9,13 @@ import Behaviour from '../behaviours/Behaviour.js';
 import Characters, {type Character} from '../constants/Characters';
 import Directions, {type Direction} from '../constants/Directions';
 import Dispatcher from './Dispatcher';
+import GameState from '../states/GameState';
 import {Record} from 'immutable';
 import {ReduceStore} from 'flux/utils';
-import UIStates, {type UIState} from '../constants/UIStates';
 import Box from './Box';
 import Line from './Line';
 import Players, {type Player} from '../constants/Players';
+import UIStates, {type UIState} from '../constants/UIStates';
 
 const State = Record({
   uiState: UIStates.HOME,
@@ -24,6 +25,8 @@ const State = Record({
   cols: 0,
   iteration: 0,
   characters: [null, null],
+
+  gameState: null,
 });
 
 class GameStore extends ReduceStore {
@@ -79,6 +82,8 @@ class GameStore extends ReduceStore {
       cols: cols,
       iteration: 0,
       characters: [player_one, player_two],
+
+      gameState: new GameState(rows, cols, player_one, player_two),
     });
   }
 
@@ -113,6 +118,15 @@ class GameStore extends ReduceStore {
       );
     }
 
+
+
+    if (direction === Directions.DOWN) {
+      direction = Directions.LEFT;
+    } else {
+      direction = Directions.UP;
+    }
+    state.gameState.selectLine(i, j, direction);
+
     return state;
   }
 
@@ -121,11 +135,11 @@ class GameStore extends ReduceStore {
   }
 
   getRows(): number {
-    return this.getState().rows;
+    return this.getState().gameState.getRows();
   }
 
   getCols(): number {
-    return this.getState().cols;
+    return this.getState().gameState.getCols();
   }
 
   getLine(row: number, col: number, direction: Direction): Line {
@@ -150,11 +164,11 @@ class GameStore extends ReduceStore {
   }
 
   getCurrentPlayer(): Player {
-    return this.getState().currentPlayer;
+    return this.getState().gameState.getCurrentPlayer();
   }
 
   getCurrentCharacter(): Character {
-    return this.getState().characters[this.getCurrentPlayer()];
+    return this.getState().gameState.getPlayers()[this.getCurrentPlayer()];
   }
 
   getCurrentIteration(): number {
@@ -190,23 +204,11 @@ class GameStore extends ReduceStore {
   }
 
   getCharacters(): Array<Character> {
-    return this.getState().characters;
+    return this.getState().gameState.getPlayers();
   }
 
   getScore(): Array<number> {
-    const score = [0, 0];
-    for (let i = 0; i < this.getRows(); ++i) {
-      for (let j = 0; j < this.getCols(); ++j) {
-        const box = this.getBox(i, j);
-        if (box) {
-          const owner = box.getOwner();
-          if (owner !== null && owner !== undefined) {
-            ++score[owner];
-          }
-        }
-      }
-    }
-    return score;
+    return this.getState().gameState.getScore();
   }
 
   getUIState(): UIState {

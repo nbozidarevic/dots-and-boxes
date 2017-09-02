@@ -39,6 +39,10 @@ export default class CoreGameState {
     return this._cols;
   }
 
+  getPlayers(): Array<Character> {
+    return this._players;
+  }
+
   serialize(): string {
     return JSON.stringify({
       rows: this._rows,

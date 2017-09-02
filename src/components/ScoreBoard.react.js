@@ -43,6 +43,6 @@ class ScoreBoard extends React.Component<{}, State> {
   }
 }
 
-ScoreBoard = Container.create(ScoreBoard);
+ScoreBoard = Container.create(ScoreBoard, {pure: false});
 
 export default ScoreBoard;

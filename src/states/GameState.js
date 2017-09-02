@@ -5,8 +5,8 @@
 'use strict';
 
 import Box from '../data/BoxNew';
-import CoreGameState from './CoreGameState';
 import {type Character} from '../constants/Characters';
+import CoreGameState from './CoreGameState';
 import Directions, {type Direction} from '../constants/Directions';
 import Line from '../data/Line';
 import Players, {type Player} from '../constants/Players';
@@ -16,6 +16,7 @@ export default class GameState {
   _currentPlayer: Player;
   _lines: Array<Array<Array<Line>>>;
   _boxes: Array<Array<Box>>;
+  _score: Array<number>;
 
   constructor(
     rows: number,
@@ -25,6 +26,7 @@ export default class GameState {
   ) {
     this._coreGameState = new CoreGameState(rows, cols, playerOne, playerTwo);
     this._currentPlayer = Players.PLAYER_ONE;
+    this._score = [0, 0];
 
     const directions = [
       Directions.UP,
@@ -33,7 +35,10 @@ export default class GameState {
       Directions.LEFT,
     ].sort();
 
+    this._lines = [];
+    this._boxes = [];
     for (let i = 0; i < rows; ++i) {
+      this._boxes[i] = [];
       for (let j = 0; j < cols; ++j) {
         this._boxes[i][j] = new Box(
           i,
@@ -64,13 +69,67 @@ export default class GameState {
   }
 
   getLine(row: number, col: number, direction: Direction): Line {
+    if (
+      row === this.getRows() &&
+      col < this.getCols() &&
+      direction === Directions.UP
+    ) {
+      --row;
+      direction = Directions.DOWN;
+    } else if (
+      row < this.getRows() &&
+      col === this.getCols() &&
+      direction === Directions.LEFT
+    ) {
+      --col;
+      direction = Directions.RIGHT;
+    }
     return this.getBox(row, col).getLine(direction);
   }
 
-  selectLine(row: number, col: number, direction: Direction, player: Player) {
+  forEachBox(callback: (Box) => void) {
+    this._boxes.forEach(boxesRow => boxesRow.forEach(box => callback(box)));
+  }
+
+  forEachLine(callback: (Line) => void) {
+    this._lines.forEach(
+      boxesRow => boxesRow.forEach(
+        box => box.forEach(line => callback(line)),
+      ),
+    );
+  }
+
+  getCurrentPlayer(): Player {
+    return this._currentPlayer;
+  }
+
+  getPlayers(): Array<Character> {
+    return this._coreGameState.getPlayers();
+  }
+
+  getScore(): Array<number> {
+    return this._score;
+  }
+
+  isGameComplete(): boolean {
+    return (
+      this._score[Players.PLAYER_ONE] + this._score[Players.PLAYER_TWO] ===
+        this.getRows() * this.getCols()
+    );
+  }
+
+  selectLine(row: number, col: number, direction: Direction) {
     const line = this.getLine(row, col, direction);
-    line.setOwner(player);
-    if (line.getBoxes().every(box => box.getOwner() === null)) {
+    line.setOwner(this._currentPlayer);
+
+    let boxCompleted = false;
+    line.getBoxes().forEach(box => {
+      if (box.getOwner() === this._currentPlayer) {
+        ++this._score[this._currentPlayer];
+        boxCompleted = true;
+      }
+    })
+    if (!boxCompleted) {
       this._currentPlayer = (this._currentPlayer + 1) % 2;
     }
   }
@@ -103,6 +162,12 @@ export default class GameState {
       );
     }
 
+    if (!this._lines[row]) {
+      this._lines[row] = [];
+    }
+    if (!this._lines[row][col]) {
+      this._lines[row][col] = [];
+    }
     if (!this._lines[row][col][direction]) {
       this._lines[row][col][direction] = new Line(row, col, direction);
     }
