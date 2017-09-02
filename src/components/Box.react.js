@@ -28,14 +28,10 @@ class Box extends React.Component<Props, State> {
   }
 
   static calculateState(prevState: State, props: Props): State {
-    const box = GameStore.getBox(
-      props.row,
-      props.col,
-    );
     return {
       rows: GameStore.getRows(),
       cols: GameStore.getCols(),
-      owner: box ? box.getOwner() : null,
+      owner: GameStore.getBoxNew(props.row, props.col).getOwner(),
     };
   }
 

@@ -13,6 +13,7 @@ import GameState from '../states/GameState';
 import {Record} from 'immutable';
 import {ReduceStore} from 'flux/utils';
 import Box from './Box';
+import BoxNew from './BoxNew';
 import Line from './Line';
 import Players, {type Player} from '../constants/Players';
 import UIStates, {type UIState} from '../constants/UIStates';
@@ -131,7 +132,7 @@ class GameStore extends ReduceStore {
   }
 
   isGameComplete(): boolean {
-    return this.getAllLines().every(line => line.getOwner() !== null);
+    return this.getState().gameState.isGameComplete();
   }
 
   getRows(): number {
@@ -142,7 +143,7 @@ class GameStore extends ReduceStore {
     return this.getState().gameState.getCols();
   }
 
-  getLine(row: number, col: number, direction: Direction): Line {
+  getLine(row: number, col: number, direction: Direction): Line {;
     return this.getState().lines[row][col][direction];
   }
 
@@ -185,6 +186,10 @@ class GameStore extends ReduceStore {
       this.getLine(row, col + 1, Directions.DOWN),
       this.getLine(row + 1, col, Directions.RIGHT),
     ]);
+  }
+
+  getBoxNew(row: number, col: number): BoxNew {
+    return this.getState().gameState.getBox(row, col);
   }
 
   getBoxesForLine(line: Line): Array<Box> {

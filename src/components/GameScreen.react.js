@@ -27,11 +27,22 @@ class GameScreen extends React.Component<{}, State> {
   }
 
   static calculateState(): State {
+    let rows = 0;
+    let cols = 0;
+    const uiState = GameStore.getUIState();
+    if (this.isValidUIState(uiState)) {
+      rows = GameStore.getRows();
+      cols = GameStore.getCols();
+    }
     return {
-      rows: GameStore.getState().rows,
-      cols: GameStore.getState().cols,
-      uiState: GameStore.getUIState(),
+      rows,
+      cols,
+      uiState,
     };
+  }
+
+  static isValidUIState(uiState: UIState): boolean {
+    return uiState === UIStates.GAME || uiState === UIStates.COMPLETED;
   }
 
   render() {
