@@ -74,4 +74,8 @@ export default class Line {
   addBox(box: Box) {
     this._boxes.push(box);
   }
+
+  getBoxes(): Array<Box> {
+    return this._boxes;
+  }
 }

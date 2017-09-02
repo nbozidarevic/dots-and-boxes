@@ -68,7 +68,11 @@ export default class GameState {
   }
 
   selectLine(row: number, col: number, direction: Direction, player: Player) {
-    this.getLine(row, col, direction).setOwner(player);
+    const line = this.getLine(row, col, direction);
+    line.setOwner(player);
+    if (line.getBoxes().every(box => box.getOwner() === null)) {
+      this._currentPlayer = (this._currentPlayer + 1) % 2;
+    }
   }
 
   _getOrCreateLine(row: number, col: number, direction: Direction): Line {
