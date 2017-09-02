@@ -18,10 +18,14 @@
   font-size: 24px;
 }
 
-.board {
+.board-wrapper {
   flex: 1;
   margin: 50px;
   position: relative;
+}
+
+.board {
+  position: absolute;
 }
 
 .box,
@@ -47,23 +51,23 @@
 }
 
 .line-horiz {
-  height: 6px;
+  height: 4px;
   border-width: 16px 0;
-  margin: -19px 0 0 -3px;
+  margin: -18px 0 0 -2px;
 }
 
 .line-vert {
-  width: 6px;
+  width: 4px;
   border-width: 0 16px;
-  margin: -3px 0 0 -19px;
+  margin: -2px 0 0 -18px;
 }
 
 .dot {
   background-color: #5a5668;
-  width: 14px;
-  height: 14px;
-  border-radius: 14px;
-  margin: -7px 0 0 -7px;
+  width: 12px;
+  height: 12px;
+  border-radius: 12px;
+  margin: -6px 0 0 -6px;
 }
 
 .player_one {

@@ -19,21 +19,29 @@ type State = {
   rows: number,
   cols: number,
   uiState: UIState,
+  wrapperDimensions?: {
+    width: number,
+    height: number,
+  };
 }
 
 class GameScreen extends React.Component<{}, State> {
+  _wrapperRef: ?React$ElementRef<'div'>;
+
   static getStores(): Array<ReduceStore> {
     return [GameStore];
   }
 
-  static calculateState(): State {
+  static calculateState(prevState: State): State {
     let rows = 0;
     let cols = 0;
+
     const uiState = GameStore.getUIState();
     if (this.isValidUIState(uiState)) {
       rows = GameStore.getRows();
       cols = GameStore.getCols();
     }
+
     return {
       rows,
       cols,
@@ -45,6 +53,14 @@ class GameScreen extends React.Component<{}, State> {
     return uiState === UIStates.GAME || uiState === UIStates.COMPLETED;
   }
 
+  componentDidMount() {
+    window.addEventListener('resize', this._updateWrapperDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._updateWrapperDimensions);
+  }
+
   render() {
     const {uiState} = this.state;
     if (uiState !== UIStates.GAME && uiState !== UIStates.COMPLETED) {
@@ -53,13 +69,70 @@ class GameScreen extends React.Component<{}, State> {
     return (
       <div className="game">
         <ScoreBoard />
-        <div className="board">
-          {this._getBoxes()}
-          {this._getLines()}
-          {this._getDots()}
+        <div className="board-wrapper" ref={this._setWrapperRef}>
+          <div className="board" style={this._getBoardPosition()}>
+            {this._getBoxes()}
+            {this._getLines()}
+            {this._getDots()}
+          </div>
         </div>
       </div>
     );
+  }
+
+  _setWrapperRef = (ref: ?React$ElementRef<'div'>) => {
+    this._wrapperRef = ref;
+    this._updateWrapperDimensions();
+  }
+
+  _updateWrapperDimensions = () => {
+    if (!this._wrapperRef) {
+      return null;
+    }
+    this.setState({
+      wrapperDimensions: {
+        width: this._wrapperRef.offsetWidth,
+        height: this._wrapperRef.offsetHeight,
+      },
+    });
+  }
+
+  _getBoardPosition(): {
+    top: number,
+    right: number,
+    bottom: number,
+    left: number,
+  } {
+    const {rows, cols, wrapperDimensions} = this.state;
+    const position = {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    };
+
+    if (
+      rows === 0 ||
+      cols === 0 ||
+      !wrapperDimensions ||
+      wrapperDimensions.width === 0 ||
+      wrapperDimensions.height === 0
+    ) {
+      return position;
+    }
+
+    const boardRatio = rows / cols;
+    const wrapperRatio = wrapperDimensions.height / wrapperDimensions.width;
+
+    if (boardRatio > wrapperRatio) {
+      position.left = position.right =
+        (wrapperDimensions.width - wrapperDimensions.height / boardRatio) / 2;
+    } else {
+      position.top = position.bottom =
+        (wrapperDimensions.height - boardRatio * wrapperDimensions.width) / 2;
+    }
+
+    return position;
   }
 
   _getBoxes(): Array<Box> {
