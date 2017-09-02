@@ -20,7 +20,7 @@ export default class Line {
   owner: ?Player;
   direction: Direction;
   iteration: number;
-  boxes: Array<Box>
+  _boxes: Array<Box>;
 
   constructor(row: number, col: number, direction: Direction) {
     this.row = row;
@@ -28,6 +28,7 @@ export default class Line {
     this.owner = null;
     this.direction = direction;
     this.iteration = -1;
+    this._boxes = [];
   }
 
   getID(): LineID {
@@ -47,6 +48,7 @@ export default class Line {
       throw new Error('Line has already been selected');
     }
     this.owner = player;
+    this._boxes.forEach(box => box.setOwner(player));
   }
 
   getIteration(): number {
@@ -70,6 +72,6 @@ export default class Line {
   }
 
   addBox(box: Box) {
-    this.boxes.push(box);
+    this._boxes.push(box);
   }
 }

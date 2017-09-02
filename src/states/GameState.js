@@ -38,9 +38,7 @@ export default class GameState {
         this._boxes[i][j] = new Box(
           i,
           j,
-          directions.map(
-            direction => this._createAndGetLine(i, j, direction),
-          ),
+          (direction: Direction) => this._getOrCreateLine(i, j, direction),
         );
       }
     }
@@ -69,7 +67,11 @@ export default class GameState {
     return this.getBox(row, col).getLine(direction);
   }
 
-  _createAndGetLine(row: number, col: number, direction: Direction): Line {
+  selectLine(row: number, col: number, direction: Direction, player: Player) {
+    this.getLine(row, col, direction).setOwner(player);
+  }
+
+  _getOrCreateLine(row: number, col: number, direction: Direction): Line {
     if (direction === Directions.RIGHT) {
       direction = Directions.LEFT;
       ++col;
