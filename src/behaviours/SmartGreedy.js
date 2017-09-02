@@ -13,7 +13,7 @@ export default class SmartGreedy extends Behaviour {
     const lines = [[], [], []];
 
     GameStore.getAllAvailableLines().forEach(line => {
-      const boxes = GameStore.getBoxesForLine(line);
+      const boxes = line.getBoxes();
       if (boxes.some(box => box.getSelectedLineCount() === 3)) {
         lines[0].push(line);
       } else if (boxes.every(box => box.getSelectedLineCount() <= 1)) {

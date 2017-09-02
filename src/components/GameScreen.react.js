@@ -73,24 +73,49 @@ class GameScreen extends React.Component<{}, State> {
   };
 
   _getLines(): Array<Line> {
+    const {rows, cols} = this.state;
     const lines = [];
-    for (let i = 0; i <= this.state.rows; ++i) {
-      for (let j = 0; j <= this.state.cols; ++j) {
-        for (let direction in Directions) {
-          const line = GameStore.getLine(i, j, Directions[direction]);
-          if (line) {
-            lines.push(
-              <Line
-                row={i}
-                col={j}
-                direction={Directions[direction]}
-                key={i + ' ' + j + ' ' + direction}
-              />
-            );
-          }
+
+    for (let i = 0; i < rows; ++i) {
+      for (let j = 0; j < cols; ++j) {
+        lines.push(
+          <Line
+            row={i}
+            col={j}
+            direction={Directions.UP}
+            key={i + '_' + j + '_up'}
+          />,
+          <Line
+            row={i}
+            col={j}
+            direction={Directions.LEFT}
+            key={i + '_' + j + '_left'}
+          />
+        );
+        if (i === rows - 1) {
+          lines.push(
+            <Line
+              row={i}
+              col={j}
+              direction={Directions.DOWN}
+              key={i + '_' + j + '_down'}
+            />,
+          );
+        }
+
+        if (j === cols - 1) {
+          lines.push(
+            <Line
+              row={i}
+              col={j}
+              direction={Directions.RIGHT}
+              key={i + '_' + j + '_right'}
+            />,
+          );
         }
       }
     }
+
     return lines;
   };
 

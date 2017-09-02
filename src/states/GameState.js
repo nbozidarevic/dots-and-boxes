@@ -4,7 +4,7 @@
 
 'use strict';
 
-import Box from '../data/BoxNew';
+import Box from '../data/Box';
 import {type Character} from '../constants/Characters';
 import CoreGameState from './CoreGameState';
 import Directions, {type Direction} from '../constants/Directions';

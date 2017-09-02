@@ -14,7 +14,7 @@ export default class Greedy extends Behaviour {
     const closingLines = [];
 
     GameStore.getAllAvailableLines().forEach(line => {
-      const boxes = GameStore.getBoxesForLine(line);
+      const boxes = line.getBoxes();
       if (boxes.some(box => box.getSelectedLineCount() === 3)) {
         closingLines.push(line);
       }

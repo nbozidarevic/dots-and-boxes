@@ -31,7 +31,7 @@ class Box extends React.Component<Props, State> {
     return {
       rows: GameStore.getRows(),
       cols: GameStore.getCols(),
-      owner: GameStore.getBoxNew(props.row, props.col).getOwner(),
+      owner: GameStore.getBox(props.row, props.col).getOwner(),
     };
   }
 

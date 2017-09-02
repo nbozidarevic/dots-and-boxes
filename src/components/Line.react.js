@@ -56,6 +56,7 @@ class Line extends React.Component<Props, State> {
   _getClassName(): string {
     const {direction} = this.props;
     const {owner, currentCharacter} = this.state;
+
     const classNames = ['line'];
 
     if (owner !== null) {
@@ -64,9 +65,9 @@ class Line extends React.Component<Props, State> {
       classNames.push('line-interactive');
     }
 
-    if (direction === Directions.DOWN) {
+    if (direction === Directions.LEFT || direction === Directions.RIGHT) {
       classNames.push('line-vert');
-    } else if (this.props.direction === Directions.RIGHT) {
+    } else {
       classNames.push('line-horiz');
     }
 
@@ -74,8 +75,14 @@ class Line extends React.Component<Props, State> {
   }
 
   _getStyle(): Object {
-    const {row, col, direction} = this.props;
+    let {row, col, direction} = this.props;
     const {rows, cols, owner} = this.state;
+
+    if (direction === Directions.DOWN) {
+      ++row;
+    } else if (direction === Directions.RIGHT) {
+      ++col;
+    }
 
     let style = {
       top: 100 * row / rows + '%',
@@ -84,9 +91,9 @@ class Line extends React.Component<Props, State> {
       left: 100 * col / cols + '%',
     };
 
-    if (direction === Directions.DOWN) {
+    if (direction === Directions.LEFT || direction === Directions.RIGHT) {
       style.bottom = 100 * (1 - (row + 1) / rows) + '%';
-    } else if (direction === Directions.RIGHT) {
+    } else {
       style.right = 100 * (1 - (col + 1) / cols) + '%';
     }
 

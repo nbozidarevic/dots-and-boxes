@@ -4,7 +4,7 @@
 
 'use strict';
 
-import Box from './BoxNew';
+import Box from './Box';
 import Directions, {type Direction} from '../constants/Directions';
 import {type Player} from '../constants/Players';
 
@@ -15,60 +15,50 @@ export type LineID = {
 };
 
 export default class Line {
-  row: number;
-  col: number;
-  owner: ?Player;
-  direction: Direction;
-  iteration: number;
+  _row: number;
+  _col: number;
+  _direction: Direction;
   _boxes: Array<Box>;
+  _owner: ?Player;
 
   constructor(row: number, col: number, direction: Direction) {
-    this.row = row;
-    this.col = col;
-    this.owner = null;
-    this.direction = direction;
-    this.iteration = -1;
+    this._row = row;
+    this._col = col;
+    this._direction = direction;
     this._boxes = [];
+    this._owner = null;
   }
 
   getID(): LineID {
     return {
-      row: this.row,
-      col: this.col,
-      dir: this.direction,
+      row: this._row,
+      col: this._col,
+      dir: this._direction,
     };
   }
 
   getOwner(): ?Player {
-    return this.owner;
+    return this._owner;
   }
 
   setOwner(player: Player) {
-    if (this.owner !== null) {
+    if (this._owner !== null) {
       throw new Error('Line has already been selected');
     }
-    this.owner = player;
+    this._owner = player;
     this._boxes.forEach(box => box.setOwner(player));
   }
 
-  getIteration(): number {
-    return this.iteration;
-  }
-
-  setIteration(iteration: number) {
-    this.iteration = iteration;
-  }
-
   getDirection(): Direction {
-    return this.direction;
+    return this._direction;
   }
 
   getRow(): number {
-    return this.row;
+    return this._row;
   }
 
   getCol(): number {
-    return this.col;
+    return this._col;
   }
 
   addBox(box: Box) {
