@@ -49,11 +49,11 @@ export default class GameState {
     }
   }
 
-  getCols(): number {
+  getRows(): number {
     return this._coreGameState.getRows();
   }
 
-  getRows(): number {
+  getCols(): number {
     return this._coreGameState.getCols();
   }
 
