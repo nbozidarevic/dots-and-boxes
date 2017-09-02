@@ -14,7 +14,7 @@ import React from 'react';
 type State = {
   rows: number,
   cols: number,
-  gameState: UIState,
+  uiState: UIState,
   player_one: Character,
   player_two: Character,
 }
@@ -28,15 +28,15 @@ class HomeScreen extends React.Component<{}, State> {
     return {
       rows: 1,
       cols: 1,
-      gameState: GameStore.getState().gameState,
+      uiState: GameStore.getUIState(),
       player_one: Characters.GREEDY,
       player_two: Characters.SMART_GREEDY,
     };
   }
 
   render() {
-    const {rows, cols, gameState, player_one, player_two} = this.state;
-    if (gameState !== UIStates.HOME) {
+    const {rows, cols, uiState, player_one, player_two} = this.state;
+    if (uiState !== UIStates.HOME) {
       return null;
     }
     return (

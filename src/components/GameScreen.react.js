@@ -18,7 +18,7 @@ import ScoreBoard from './ScoreBoard.react';
 type State = {
   rows: number,
   cols: number,
-  gameState: UIState,
+  uiState: UIState,
 }
 
 class GameScreen extends React.Component<{}, State> {
@@ -30,13 +30,13 @@ class GameScreen extends React.Component<{}, State> {
     return {
       rows: GameStore.getState().rows,
       cols: GameStore.getState().cols,
-      gameState: GameStore.getState().gameState,
+      uiState: GameStore.getUIState(),
     };
   }
 
   render() {
-    const {gameState} = this.state;
-    if (gameState !== UIStates.GAME && gameState !== UIStates.COMPLETED) {
+    const {uiState} = this.state;
+    if (uiState !== UIStates.GAME && uiState !== UIStates.COMPLETED) {
       return null;
     }
     return (
