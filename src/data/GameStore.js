@@ -21,11 +21,7 @@ import UIStates, {type UIState} from '../constants/UIStates';
 const State = Record({
   uiState: UIStates.HOME,
   lines: [],
-  currentPlayer: Players.PLAYER_ONE,
-  rows: 0,
-  cols: 0,
   iteration: 0,
-  characters: [null, null],
 
   gameState: null,
 });
@@ -78,11 +74,7 @@ class GameStore extends ReduceStore {
     return new State({
       uiState: UIStates.GAME,
       lines: lines,
-      currentPlayer: Players.PLAYER_ONE,
-      rows: rows,
-      cols: cols,
       iteration: 0,
-      characters: [player_one, player_two],
 
       gameState: new GameState(rows, cols, player_one, player_two),
     });
@@ -108,18 +100,7 @@ class GameStore extends ReduceStore {
 
     if (this.isGameComplete()) {
       state = state.set('uiState', UIStates.COMPLETED);
-    } else if (
-      this.getBoxesForLine(line).every(box => box.getOwner() === null)
-    ) {
-      state = state.set(
-        'currentPlayer',
-        this.getCurrentPlayer() === Players.PLAYER_ONE
-          ? Players.PLAYER_TWO
-          : Players.PLAYER_ONE,
-      );
     }
-
-
 
     if (direction === Directions.DOWN) {
       direction = Directions.LEFT;
