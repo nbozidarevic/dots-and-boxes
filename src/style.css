@@ -1,9 +1,11 @@
 .root {
   position: fixed;
-  top: 40px;
-  left: 40px;
-  bottom: 40px;
-  right: 40px;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  padding: 40px;
+  overflow: auto;
 }
 
 .game {
@@ -20,7 +22,7 @@
 
 .board-wrapper {
   flex: 1;
-  margin: 50px;
+  margin: 20px;
   position: relative;
 }
 
