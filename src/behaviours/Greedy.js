@@ -4,26 +4,24 @@
 
 'use strict';
 
-import Behaviour from './Behaviour';
-import GameStore from '../data/GameStore';
+import Random from './Random';
+import GameState from '../states/GameState';
 import Line from '../data/Line';
 
-export default class Greedy extends Behaviour {
-  run(): ?Line {
-    const allAvailableLines = GameStore.getAllAvailableLines();
+export default class Greedy extends Random {
+  run(gameState: GameState): ?Line {
     const closingLines = [];
 
-    GameStore.getAllAvailableLines().forEach(line => {
-      const boxes = line.getBoxes();
-      if (boxes.some(box => box.getSelectedLineCount() === 3)) {
+    gameState.forEachAvailableLine(line => {
+      if (line.getBoxes().some(box => box.getSelectedLineCount() === 3)) {
         closingLines.push(line);
       }
     });
 
-    return this.getRandomLine(
-      closingLines.length > 0
-        ? closingLines
-        : allAvailableLines,
-    );
+    if (closingLines.length > 0) {
+      return this.getRandomLine(closingLines);
+    }
+
+    return super.run(gameState);
   }
 }

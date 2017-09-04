@@ -28,8 +28,20 @@ export default class Box {
     this._lines.forEach(line => line.addBox(this));
   }
 
+  getRow(): number {
+    return this._row;
+  }
+
+  getCol(): number {
+    return this._col;
+  }
+
   getLine(direction: Direction): Line {
     return this._lines[direction];
+  }
+
+  getAvailableLines(): Array<Line> {
+    return this._lines.filter((line: Line) => line.getOwner() === null);
   }
 
   getOwner(): ?Player {

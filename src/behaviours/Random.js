@@ -6,11 +6,15 @@
 
 import Actions from '../data/Actions';
 import Behaviour from './Behaviour';
-import GameStore from '../data/GameStore';
+import GameState from '../states/GameState';
 import Line from '../data/Line';
 
 export default class Random extends Behaviour {
-  run(): ?Line {
-    return this.getRandomLine(GameStore.getAllAvailableLines());
+  run(gameState: GameState): ?Line {
+    const lines = [];
+    gameState.forEachAvailableLine((line: Line) => {
+      lines.push(line);
+    });
+    return this.getRandomLine(lines);
   }
 }

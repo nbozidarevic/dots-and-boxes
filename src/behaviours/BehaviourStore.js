@@ -9,13 +9,15 @@ import ActionTypes from '../constants/ActionTypes';
 import Behaviour from './Behaviour';
 import Characters, {type Character} from '../constants/Characters';
 import Dispatcher from '../data/Dispatcher';
-import UIStates from '../constants/UIStates';
+import GameState from '../states/GameState';
 import GameStore from '../data/GameStore';
 import Greedy from './Greedy';
 import Human from './Human';
+import OptimizingGreedy from './OptimizingGreedy';
 import Random from './Random';
 import {ReduceStore} from 'flux/utils';
 import SmartGreedy from './SmartGreedy';
+import UIStates from '../constants/UIStates';
 
 class BehaviourStore extends ReduceStore {
   constructor() {
@@ -34,13 +36,14 @@ class BehaviourStore extends ReduceStore {
     switch (action.type) {
       case ActionTypes.SELECT_LINE:
       case ActionTypes.START_GAME:
-        setTimeout(() => this.run());
+        setTimeout(() => this.run(GameStore.getGameState()));
     }
     return state;
   }
 
-  run() {
-    const line = this.getBehaviour(GameStore.getCurrentCharacter()).run();
+  run(gameState: GameState) {
+    const line =
+      this.getBehaviour(GameStore.getCurrentCharacter()).run(gameState);
     if (line) {
       Actions.selectLine(line.getRow(), line.getCol(), line.getDirection());
     }
@@ -56,6 +59,8 @@ class BehaviourStore extends ReduceStore {
         return new Greedy();
       case Characters.SMART_GREEDY:
         return new SmartGreedy();
+      case Characters.OPTIMIZING_GREEDY:
+        return new OptimizingGreedy();
       default:
         throw new Error('Character ' + character + ' not implemented');
     }

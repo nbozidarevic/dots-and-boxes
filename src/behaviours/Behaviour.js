@@ -4,10 +4,11 @@
 
 'use strict';
 
+import GameState from '../states/GameState';
 import Line from '../data/Line';
 
 export default class Behaviour {
-  run(): ?Line {
+  run(gameState: GameState): ?Line {
     throw new Error('run() method not implemented');
   }
 

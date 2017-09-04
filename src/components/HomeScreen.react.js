@@ -26,10 +26,10 @@ class HomeScreen extends React.Component<{}, State> {
 
   static calculateState(): State {
     return {
-      rows: 10,
-      cols: 10,
+      rows: 3,
+      cols: 3,
       uiState: GameStore.getUIState(),
-      player_one: Characters.GREEDY,
+      player_one: Characters.OPTIMIZING_GREEDY,
       player_two: Characters.SMART_GREEDY,
     };
   }

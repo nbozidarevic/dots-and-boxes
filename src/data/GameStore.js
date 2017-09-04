@@ -127,6 +127,10 @@ class GameStore extends ReduceStore {
   getUIState(): UIState {
     return this.getState().uiState;
   }
+
+  getGameState(): GameState {
+    return this.getState().gameState;
+  }
 }
 
 export default new GameStore();

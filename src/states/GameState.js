@@ -99,6 +99,14 @@ export default class GameState {
     );
   }
 
+  forEachAvailableLine(callback: (Line) => void) {
+    this.forEachLine((line: Line) => {
+      if (line.getOwner() === null) {
+        callback(line);
+      }
+    });
+  }
+
   getCurrentPlayer(): Player {
     return this._currentPlayer;
   }
