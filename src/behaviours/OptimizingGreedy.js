@@ -6,15 +6,25 @@
 
 import Actions from '../data/Actions';
 import Box from '../data/Box';
+import Directions, {type Direction} from '../constants/Directions';
 import GameState from '../states/GameState';
 import Line from '../data/Line';
 import SmartGreedy from './SmartGreedy';
+
+type SelectedLines = Array<boolean>;
 
 type StartingPoint = {
   row: number,
   col: number,
   value: number,
 };
+
+const DIR = [
+  {row: -1, col: 0}, // Directions.UP
+  {row: 0, col: 1}, // Directions.RIGHT
+  {row: 1, col: 0}, // Directions.DOWN
+  {row: 0, col: -1}, // Directions.LEFT
+];
 
 export default class OptimizingGreedy extends SmartGreedy {
   run(gameState: GameState): ?Line {
@@ -27,7 +37,12 @@ export default class OptimizingGreedy extends SmartGreedy {
       if (!map[row]) {
         map[row] = [];
       }
-      map[row][col] = 4 - box.getSelectedLineCount();
+      map[row][col] = [];
+
+      const boxInfo = [];
+      for (let dir = Directions.UP; dir <= Directions.LEFT; ++dir) {
+        map[row][col][dir] = box.getLine(dir).getOwner() !== null;
+      }
     });
 
     let startingPoints = [];
@@ -64,9 +79,10 @@ export default class OptimizingGreedy extends SmartGreedy {
 
   dfs(
     gameState: GameState,
-    map: Array<Array<number>>,
+    map: Array<Array<SelectedLines>>,
     row: number,
     col: number,
+    originDirection?: Direction,
   ): number {
     if (
       row < 0 ||
@@ -76,20 +92,35 @@ export default class OptimizingGreedy extends SmartGreedy {
     ) {
       return 0;
     }
-    if (map[row][col] !== 1) {
+
+    if (originDirection !== undefined) {
+      map[row][col][(originDirection + 2) % 4] = true;
+    }
+
+    let availableLines = 0;
+    map[row][col].forEach((isSelected: boolean) => {
+      if (!isSelected) {
+        ++availableLines;
+      }
+    });
+    if (availableLines !== 1) {
       return 0;
     }
 
-    // let count = 1;
-    // [
-    //   Directions.UP,
-    //   Directions.RIGHT,
-    //   Directions.DOWN,
-    //   Directions.LEFT,
-    // ].forEach((direction: Direction) {
-    //   if (gameState.getLine(row, col, direction).getOwner() !== null)
-    // });
+    let count = 1;
+    map[row][col].forEach((isSelected: boolean, dir: Direction) => {
+      if (!isSelected) {
+        map[row][col][dir] = true;
+        count += this.dfs(
+          gameState,
+          map,
+          row + DIR[dir].row,
+          col + DIR[dir].col,
+          dir,
+        );
+      }
+    });
 
-    return 0;
+    return count;
   }
 }
