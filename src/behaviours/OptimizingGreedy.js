@@ -49,7 +49,7 @@ const DIR = [
  * - [done] If there is any open chain longer than 2, select a line at its beginning.
  * - [done] If there is any closed chain shorter than 4, complete it.
  * - [done] If there is any chain shorter than 2, complete it.
- * - If there are multiple chains, select a line in the longest one.
+ * - [done] If there are multiple chains, select a line in the longest one.
  * - At this point, we only have either a closed chain of length 4, or a
  *   half-open chain of length 2, and all other lines start new chains.
  * - Do alpha-beta pruning with one option being leaving the chain to the
@@ -96,14 +96,12 @@ export default class OptimizingGreedy extends SmartGreedy {
     return counts;
   }
 
-  _getAvailableLineForBox(map: Map, row: number, col: number): Direction {
-    const box = map[row][col];
-    for (let dir = Directions.UP; dir <= Directions.LEFT; ++dir) {
-      if (!box[dir]) {
-        return dir;
-      }
-    }
-    throw Error('Expected to find an available line');
+  _getLineForBox(
+    gameState: GameState,
+    row: number,
+    col: number,
+  ): Line {
+    return gameState.getBox(row, col).getAvailableLines()[0];
   }
 
   _getAllChains(map: Map): Chains {
@@ -128,6 +126,7 @@ export default class OptimizingGreedy extends SmartGreedy {
     const rows = gameState.getRows();
     const cols = gameState.getCols();
     const map = this._getMapFromGameState(gameState);
+    let box;
 
     /**
      * If there are boxes with 3 or 4 unused lines, choose any line which
@@ -136,7 +135,6 @@ export default class OptimizingGreedy extends SmartGreedy {
      */
     const boxesByLineCount = this._getBoxesGroupedByAvailableLineCount(map);
     if (boxesByLineCount[3].length + boxesByLineCount[4].length > 0) {
-      let box;
       if (boxesByLineCount[1].length > 0) {
         box = boxesByLineCount[1][0];
       } else {
@@ -145,60 +143,45 @@ export default class OptimizingGreedy extends SmartGreedy {
           ...boxesByLineCount[4],
         ][0];
       }
-      return gameState.getLine(
-        box.row,
-        box.col,
-        this._getAvailableLineForBox(map, box.row, box.col),
-      );
+      return this._getLineForBox(gameState, box.row, box.col);
     }
 
     const chains = this._getAllChains(map);
     chains.closed = chains.closed.sort(this._chainComparator);
     chains.open = chains.open.sort(this._chainComparator);
 
-    if (chains.closed.length + chains.open.length > 0) {
-      let box;
-      if (chains.closed.length > 0 && chains.closed[0].length > 4) {
-        /**
-         * If there is any chain longer than 4, select a line at its beginning.
-         */
-        box = chains.closed[0];
-      } else if (chains.open.length > 0 && chains.open[0].length > 4) {
-        /**
-         * If there is any chain longer than 4, select a line at its beginning.
-         */
+    // If there is an open chain that is not of length 2, use it
+    if (chains.open.length > 0) {
+      if (chains.open[0].length > 2) {
         box = chains.open[0];
-      } else if (chains.open.length > 0 && chains.open[0].length > 2) {
-        /**
-         * If there is any open chain longer than 2, select a line at its
-         * beginning.
-         */
-        box = chains.open[0];
-      } else if (
-        chains.open.length > 0 &&
-        chains.open[chains.open.length - 1].length < 2
-      ) {
-        /**
-         * If there is any open chain shorter than 2, complete it.
-         */
-        box = chains.open[0];
-      } else if (
-        chains.closed.length > 0 &&
-        chains.closed[chains.closed.length - 1].length < 4
-      ) {
-        /**
-         * If there is any closed chain shorter than 4, complete it.
-         */
-        box = chains.closed[0];
+        return this._getLineForBox(gameState, box.row, box.col);
+      } else if (chains.open[chains.open.length - 1].length < 2) {
+        box = chains.open[chains.open.length - 1];
+        return this._getLineForBox(gameState, box.row, box.col);
       }
+    }
+    // If there is a closed chain that is not of length 4, use it
+    if (chains.closed.length > 0) {
+      if (chains.closed[0].length > 4) {
+        box = chains.closed[0];
+        return this._getLineForBox(gameState, box.row, box.col);
+      } else if (chains.closed[chains.closed.length - 1].length < 4) {
+        box = chains.closed[chains.closed.length - 1];
+        return this._getLineForBox(gameState, box.row, box.col);
+      }
+    }
 
-      if (box) {
-        return gameState.getLine(
-          box.row,
-          box.col,
-          this._getAvailableLineForBox(map, box.row, box.col),
-        );
-      }
+    // If there are multiple chains, select a line in the longest one.
+    const allChains = [
+      ...chains.closed,
+      ...chains.open,
+    ].sort(this._chainComparator);
+    if (allChains.length > 1) {
+      box = allChains[0];
+    }
+
+    if (box) {
+      return this._getLineForBox(gameState, box.row, box.col);
     }
 
 
