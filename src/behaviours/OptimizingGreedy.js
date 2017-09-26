@@ -78,23 +78,81 @@ export default class OptimizingGreedy extends SmartGreedy {
     return map.map(row => row.map(box => box.slice(0)));
   }
 
-  _getBoxesGroupedByAvailableLineCount(
+  _getLinesGroupedByBoxAvailableLineCount(
     map: Map,
-  ): Array<Array<{row: number, col: number}>> {
+    rows: number,
+    cols: number,
+  ): Array<Array<{row: number, col: number, direction: Direction}>> {
     const counts = [[], [], [], [], []];
-    map.forEach(
-      (boxes, row) => {
-        boxes.forEach(
-          (box, col) => {
-            counts[
-              box.filter(selectedLine => !selectedLine).length
-            ].push({row, col});
-          },
-        );
-      },
-    );
+
+    const getBoxAvailableLineCount = (row: number, col: number) => {
+      let count = 0;
+      map[row][col].forEach(selectedLine => {
+        if (!selectedLine) {
+          ++count;
+        }
+      });
+      return count;
+    };
+
+    for (let i = 0; i < rows; ++i) {
+      for (let j = 0; j < cols; ++j) {
+        const currentBoxCount = getBoxAvailableLineCount(i, j);
+        const upBoxCount = i > 0 ? getBoxAvailableLineCount(i - 1, j) : 4;
+        const leftBoxCount = j > 0 ? getBoxAvailableLineCount(i, j - 1) : 4;
+
+        if (!map[i][j][Directions.UP]) {
+          counts[Math.min(currentBoxCount, upBoxCount)].push({
+            row: i,
+            col: j,
+            direction: Directions.UP,
+          });
+        }
+        if (!map[i][j][Directions.LEFT]) {
+          counts[Math.min(currentBoxCount, leftBoxCount)].push({
+            row: i,
+            col: j,
+            direction: Directions.LEFT,
+          });
+        }
+
+        if (i === rows - 1 && !map[i][j][Directions.DOWN]) {
+          counts[currentBoxCount].push({
+            row: i,
+            col: j,
+            direction: Directions.DOWN,
+          });
+        }
+        if (j === cols - 1 && !map[i][j][Directions.RIGHT]) {
+          counts[currentBoxCount].push({
+            row: i,
+            col: j,
+            direction: Directions.RIGHT,
+          });
+        }
+      }
+    }
+
     return counts;
   }
+
+  // _getBoxesGroupedByAvailableLineCount(
+  //   map: Map,
+  // ): Array<Array<{row: number, col: number}>> {
+  //   const counts = [[], [], [], [], []];
+  //   map.forEach(
+  //     (boxes, row) => {
+  //       boxes.forEach(
+  //         (box, col) => {
+  //           counts[
+  //             box.filter(selectedLine => !selectedLine).length
+  //           ].push({row, col});
+  //         },
+  //       );
+  //     },
+  //   );
+  //   return counts;
+  // }
 
   _getLineForBox(
     gameState: GameState,
@@ -104,13 +162,95 @@ export default class OptimizingGreedy extends SmartGreedy {
     return gameState.getBox(row, col).getAvailableLines()[0];
   }
 
-  _getAllChains(map: Map): Chains {
+  _getAllChains(map: Map, rows: number, cols: number): Chains {
     const chains = {
       closed: [],
       open: [],
     };
 
-    return chains;
+    const availableLineCount = (i: number, j: number) => {
+      let availableLines = 0;
+      map[i][j].forEach((isSelected: boolean) => {
+        if (!isSelected) {
+          ++availableLines;
+        }
+      });
+      return availableLines;
+    }
+
+    for (let row = 0; row < rows; ++row) {
+      for (let col = 0; col < cols; ++col) {
+        let chain: Chain = {
+          row,
+          col,
+          length: 0,
+        };
+
+        let prevDirection = null;
+        let bfsRow = row;
+        let bfsCol = col;
+
+        while (true) {
+          if (bfsRow < 0 || bfsRow >= rows || bfsCol < 0 || bfsCol >= cols) {
+            // We have exited the map, which means this is an open chain
+            chains.open.push(chain);
+            break;
+          }
+
+          if (prevDirection !== null) {
+            map[bfsRow][bfsCol][(prevDirection + 2) % 4] = true;
+          }
+
+          const availableLines = availableLineCount(bfsRow, bfsCol);
+
+          if (availableLines === 1) {
+            ++chain.length;
+            let direction = null;
+            map[bfsRow][bfsCol].forEach(
+              (isSelected: boolean, dir: Direction) => {
+                if (!isSelected) {
+                  direction = dir;
+                }
+              },
+            );
+
+            if (direction === null) {
+              throw new Error('direction should never be null');
+            }
+
+            map[bfsRow][bfsCol][direction] = true;
+            bfsRow = bfsRow + DIR[direction].row;
+            bfsCol = bfsCol + DIR[direction].col;
+            prevDirection = direction;
+
+            continue;
+          }
+
+          if (availableLines === 0) {
+            // We have reached a completely closed box, which means this is a
+            // closed chain
+            if (prevDirection !== null) {
+              ++chain.length;
+            }
+            chains.closed.push(chain);
+          } else {
+            // We have reached a non-closable box, which means this is an
+            // open chain
+            chains.open.push(chain);
+          }
+          break;
+        }
+      }
+    }
+
+    return {
+      closed: chains.closed
+        .filter((chain: Chain) => chain.length > 0)
+        .sort(this._chainComparator),
+      open: chains.open
+        .filter((chain: Chain) => chain.length > 0)
+        .sort(this._chainComparator),
+    }
   }
 
   _chainComparator(a: Chain, b: Chain) {
@@ -126,29 +266,44 @@ export default class OptimizingGreedy extends SmartGreedy {
     const rows = gameState.getRows();
     const cols = gameState.getCols();
     const map = this._getMapFromGameState(gameState);
+
+    /**
+     * If there are adjacent boxes with 3 or 4 unused lines, choose the line
+     * which completes a box. If there is no such line, select any line which
+     * is in between the two boxes from the condition. This way, we are not
+     * providing any opportunities for the oponent to complete a box.
+     */
+
+    let line;
+    const linesByBoxAvailableLineCount =
+      this._getLinesGroupedByBoxAvailableLineCount(map, rows, cols);
+    // console.log('linesByBoxAvailableLineCount', linesByBoxAvailableLineCount);
+    if (
+      linesByBoxAvailableLineCount[3].length +
+        linesByBoxAvailableLineCount[4].length > 0
+    ) {
+      if (linesByBoxAvailableLineCount[1].length > 0) {
+        line = linesByBoxAvailableLineCount[1][0];
+      } else {
+        line = [
+          ...linesByBoxAvailableLineCount[3],
+          ...linesByBoxAvailableLineCount[4],
+        ][0];
+      }
+      return gameState.getLine(line.row, line.col, line.direction);
+    }
+
     let box;
 
     /**
-     * If there are boxes with 3 or 4 unused lines, choose any line which
-     * completes a box. If there is no such line, select any line which doesn't
-     * complete a box.
+     * Chains are a sequence of boxes where the first one can be completed,
+     * which then makes it possible to complete another one, etc. They can be
+     * closed (all the boxes within a closed polygon can be completed) or open.
+     * Depending on the number of chains and their type, we might choose to not
+     * complete then if it is the optimal tactic.
      */
-    const boxesByLineCount = this._getBoxesGroupedByAvailableLineCount(map);
-    if (boxesByLineCount[3].length + boxesByLineCount[4].length > 0) {
-      if (boxesByLineCount[1].length > 0) {
-        box = boxesByLineCount[1][0];
-      } else {
-        box = [
-          ...boxesByLineCount[3],
-          ...boxesByLineCount[4],
-        ][0];
-      }
-      return this._getLineForBox(gameState, box.row, box.col);
-    }
-
-    const chains = this._getAllChains(map);
-    chains.closed = chains.closed.sort(this._chainComparator);
-    chains.open = chains.open.sort(this._chainComparator);
+    const chains = this._getAllChains(this._cloneMap(map), rows, cols);
+    // console.log('chains', chains);
 
     // If there is an open chain that is not of length 2, use it
     if (chains.open.length > 0) {
@@ -178,96 +333,15 @@ export default class OptimizingGreedy extends SmartGreedy {
     ].sort(this._chainComparator);
     if (allChains.length > 1) {
       box = allChains[0];
-    }
-
-    if (box) {
       return this._getLineForBox(gameState, box.row, box.col);
     }
 
-
-
-
-
-
-
-
-
-    let startingPoints = [];
-    for (let i = 0; i < rows; ++i) {
-      for (let j = 0; j < cols; ++j) {
-        startingPoints.push({
-          row: i,
-          col: j,
-          value: this.dfs(gameState, map, i, j),
-        });
-      }
+    // At this point, either all boxes are missing two lines, or we are left
+    // with only one chain which is either open and of length 2, or closed and
+    // of length 4.
+    if (allChains.length === 1) {
+      return this._getLineForBox(gameState, allChains[0].row, allChains[0].col);
     }
-
-    startingPoints = startingPoints.filter(
-      (startingPoint: StartingPoint) => startingPoint.value > 0,
-    );
-
-    startingPoints.sort((a: StartingPoint, b: StartingPoint) => {
-      if (a.value === b.value) {
-        return 0;
-      }
-      return a.value < b.value ? -1 : 1;
-    });
-
-    if (startingPoints.length === 0) {
-      return super.run(gameState);
-    }
-
-    return gameState.getBox(
-      startingPoints[0].row,
-      startingPoints[0].col,
-    ).getAvailableLines()[0];
-  }
-
-  dfs(
-    gameState: GameState,
-    map: Map,
-    row: number,
-    col: number,
-    originDirection?: Direction,
-  ): number {
-    if (
-      row < 0 ||
-      row >= gameState.getRows() ||
-      col < 0 ||
-      col >= gameState.getCols()
-    ) {
-      return 0;
-    }
-
-    if (originDirection !== undefined) {
-      map[row][col][(originDirection + 2) % 4] = true;
-    }
-
-    let availableLines = 0;
-    map[row][col].forEach((isSelected: boolean) => {
-      if (!isSelected) {
-        ++availableLines;
-      }
-    });
-    if (availableLines !== 1) {
-      return 0;
-    }
-
-    let count = 1;
-    map[row][col].forEach((isSelected: boolean, dir: Direction) => {
-      if (!isSelected) {
-        map[row][col][dir] = true;
-        count += this.dfs(
-          gameState,
-          map,
-          row + DIR[dir].row,
-          col + DIR[dir].col,
-          dir,
-        );
-      }
-    });
-
-    return count;
+    return super.run(gameState);
   }
 }
