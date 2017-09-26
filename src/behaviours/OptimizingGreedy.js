@@ -277,7 +277,6 @@ export default class OptimizingGreedy extends SmartGreedy {
     let line;
     const linesByBoxAvailableLineCount =
       this._getLinesGroupedByBoxAvailableLineCount(map, rows, cols);
-    // console.log('linesByBoxAvailableLineCount', linesByBoxAvailableLineCount);
     if (
       linesByBoxAvailableLineCount[3].length +
         linesByBoxAvailableLineCount[4].length > 0
@@ -303,7 +302,6 @@ export default class OptimizingGreedy extends SmartGreedy {
      * complete then if it is the optimal tactic.
      */
     const chains = this._getAllChains(this._cloneMap(map), rows, cols);
-    // console.log('chains', chains);
 
     // If there is an open chain that is not of length 2, use it
     if (chains.open.length > 0) {
