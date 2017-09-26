@@ -19,6 +19,8 @@ import {ReduceStore} from 'flux/utils';
 import SmartGreedy from './SmartGreedy';
 import UIStates from '../constants/UIStates';
 
+const MIN_MOVE_TIME = 200; // ms
+
 class BehaviourStore extends ReduceStore {
   constructor() {
     super(Dispatcher);
@@ -42,10 +44,25 @@ class BehaviourStore extends ReduceStore {
   }
 
   run(gameState: GameState) {
+    const startTime = performance.now();
     const line =
       this.getBehaviour(GameStore.getCurrentCharacter()).run(gameState);
-    if (line) {
-      Actions.selectLine(line.getRow(), line.getCol(), line.getDirection());
+    const elapsedTime = performance.now() - startTime;
+
+    if (!line) {
+      throw new Error('line should not be null');
+    }
+
+    const selectLine = () => Actions.selectLine(
+      line.getRow(),
+      line.getCol(),
+      line.getDirection()
+    );
+
+    if (elapsedTime < MIN_MOVE_TIME) {
+      setTimeout(selectLine, MIN_MOVE_TIME - elapsedTime);
+    } else {
+      selectLine();
     }
   }
 
