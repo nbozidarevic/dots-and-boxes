@@ -30,4 +30,15 @@ export default class SmartGreedy extends Greedy {
 
     return super.run(gameState)
   }
+
+  static getName(): string {
+    return 'Računar: Pametniji Pohlepni';
+  }
+
+  static getDescription(): string {
+    return `Računar će uvek odabrati prvu liniju koju nađe koja zatvara kutiju.
+      Ukoliko ne postoji nijedna takva linija, odabraće neku drugu liniju koja
+      ne omogućava protivniku da zatvori kutiju. Ukoliko ne postoji ni takva
+      linija, odabraće neku drugu liniju nasumično.`
+  }
 }

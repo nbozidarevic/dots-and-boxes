@@ -11,4 +11,12 @@ export default class Human extends Behaviour {
   run(): ?Line {
     return null;
   }
+
+  static getName(): string {
+    return 'Igrač';
+  }
+
+  static getDescription(): string {
+    return 'Korisnik kontroliše igrača.'
+  }
 }

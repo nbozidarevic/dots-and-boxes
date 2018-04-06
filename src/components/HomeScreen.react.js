@@ -4,6 +4,7 @@
 
 'use strict';
 
+import BehaviourStore from '../behaviours/BehaviourStore';
 import Actions from '../data/Actions';
 import Characters, {type Character} from '../constants/Characters';
 import UIStates, {type UIState} from '../constants/UIStates';
@@ -26,11 +27,11 @@ class HomeScreen extends React.Component<{}, State> {
 
   static calculateState(): State {
     return {
-      rows: 3,
-      cols: 3,
+      rows: 7,
+      cols: 7,
       uiState: GameStore.getUIState(),
       player_one: Characters.OPTIMIZING_GREEDY,
-      player_two: Characters.SMART_GREEDY,
+      player_two: Characters.GREEDY,
     };
   }
 
@@ -42,7 +43,7 @@ class HomeScreen extends React.Component<{}, State> {
     return (
       <div>
         <div>
-          Dimensions:
+          Dimenzije:
           <input
             type="number"
             min={1}
@@ -59,18 +60,22 @@ class HomeScreen extends React.Component<{}, State> {
           />
           <input
             type="button"
-            value="Play"
+            value="Kreni"
             onClick={this._startGame}
           />
         </div>
-        <div>
-          Players:
+        <div className="desc">
+          Protivnici:
           <select onChange={this._updatePlayerOne} value={player_one}>
             {this._getCharacterOptions()}
           </select>
+          {' vs '}
           <select onChange={this._updatePlayerTwo} value={player_two}>
             {this._getCharacterOptions()}
           </select>
+        </div>
+        <div>
+          {this._getCharacterDescriptions()}
         </div>
       </div>
     );
@@ -81,11 +86,24 @@ class HomeScreen extends React.Component<{}, State> {
     for (let character in Characters) {
       options.push(
         <option key={character} value={Characters[character]}>
-          {character}
+          {BehaviourStore.getBehaviourName(Characters[character])}
         </option>
       );
     }
     return options;
+  }
+
+  _getCharacterDescriptions(): Array<any> {
+    const {player_one, player_two} = this.state;
+    const descriptions = [
+      <div className="desc" key="player_one">{`${BehaviourStore.getBehaviourName(player_one)} - ${BehaviourStore.getBehaviourDescription(player_one)}`}</div>
+    ];
+    if (player_two !== player_one) {
+      descriptions.push(
+        <div className="desc" key="player_two">{`${BehaviourStore.getBehaviourName(player_two)} - ${BehaviourStore.getBehaviourDescription(player_two)}`}</div>
+      );
+    }
+    return descriptions;
   }
 
   _getCharacterFromEvent(event: Event): ?Character {

@@ -17,4 +17,12 @@ export default class Random extends Behaviour {
     });
     return this.getRandomLine(lines);
   }
+
+  static getName(): string {
+    return 'Računar: Nasumično';
+  }
+
+  static getDescription(): string {
+    return 'Računar nasumično bira linije.'
+  }
 }

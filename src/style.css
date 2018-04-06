@@ -8,6 +8,11 @@
   overflow: auto;
 }
 
+.desc {
+  margin-top: 16px;
+  width: 600px;
+}
+
 .game {
   height: 100%;
   display: flex;

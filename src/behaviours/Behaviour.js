@@ -15,4 +15,12 @@ export default class Behaviour {
   getRandomLine(lines: Array<Line>): Line {
     return lines[Math.floor(Math.random() * lines.length)];
   }
+
+  static getName(): string {
+    throw new Error('getName() method not implemented');
+  }
+
+  static getDescription(): string {
+    throw new Error('getDescription() method not implemented');
+  }
 }

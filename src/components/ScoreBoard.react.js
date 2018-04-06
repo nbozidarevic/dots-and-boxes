@@ -4,6 +4,7 @@
 
 'use strict';
 
+import BehaviourStore from '../behaviours/BehaviourStore';
 import {type Character} from '../constants/Characters';
 import GameStore from '../data/GameStore';
 import {Container, ReduceStore} from 'flux/utils';
@@ -31,13 +32,13 @@ class ScoreBoard extends React.Component<{}, State> {
     const {characters, score} = this.state;
     return (
       <div className="scoreboard">
-        {characters[Players.PLAYER_ONE]}
+        {BehaviourStore.getBehaviourName(characters[Players.PLAYER_ONE])}
         {' '}
         <span className="player_one">{score[Players.PLAYER_ONE]}</span>
         :
         <span className="player_two">{score[Players.PLAYER_TWO]}</span>
         {' '}
-        {characters[Players.PLAYER_TWO]}
+        {BehaviourStore.getBehaviourName(characters[Players.PLAYER_TWO])}
       </div>
     );
   }

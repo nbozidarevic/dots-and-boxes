@@ -24,4 +24,15 @@ export default class Greedy extends Random {
 
     return super.run(gameState);
   }
+
+  static getName(): string {
+    return 'Računar: Pohlepni';
+  }
+
+  static getDescription(): string {
+    return `Računar će uvek odabrati prvu liniju koju nađe koja zatvara kutiju.
+      Ukoliko ne postoji nijedna takva linija, odabraće neku drugu liniju
+      nasumično, i neće paziti na posledice, odnosnu da li protivniku tako
+      omogućava da zatvori kutiju.`
+  }
 }

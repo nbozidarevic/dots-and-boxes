@@ -19,7 +19,7 @@ import {ReduceStore} from 'flux/utils';
 import SmartGreedy from './SmartGreedy';
 import UIStates from '../constants/UIStates';
 
-const MIN_MOVE_TIME = 200; // ms
+const MIN_MOVE_TIME = 100; // ms
 
 class BehaviourStore extends ReduceStore {
   constructor() {
@@ -80,6 +80,40 @@ class BehaviourStore extends ReduceStore {
         return new OptimizingGreedy();
       default:
         throw new Error('Character ' + character + ' not implemented');
+    }
+  }
+
+  getBehaviourName(character: Character): string {
+    switch (character) {
+      case Characters.HUMAN:
+        return Human.getName();
+      case Characters.RANDOM:
+        return Random.getName();
+      case Characters.GREEDY:
+        return Greedy.getName();
+      case Characters.SMART_GREEDY:
+        return SmartGreedy.getName();
+      case Characters.OPTIMIZING_GREEDY:
+        return OptimizingGreedy.getName();
+      default:
+        throw new Error('Character name for ' + character + ' not implemented');
+      }
+  }
+
+  getBehaviourDescription(character: Character): string {
+    switch (character) {
+      case Characters.HUMAN:
+        return Human.getDescription();
+      case Characters.RANDOM:
+        return Random.getDescription();
+      case Characters.GREEDY:
+        return Greedy.getDescription();
+      case Characters.SMART_GREEDY:
+        return SmartGreedy.getDescription();
+      case Characters.OPTIMIZING_GREEDY:
+        return OptimizingGreedy.getDescription();
+      default:
+        throw new Error('Character desc for ' + character + ' not implemented');
     }
   }
 }

@@ -56,6 +56,19 @@ const DIR = [
  *   opponent, and the other being getting the chain and
  */
 export default class OptimizingGreedy extends SmartGreedy {
+  static getName(): string {
+    return 'Računar: Minimaks';
+  }
+
+  static getDescription(): string {
+    return `Računar će uvek pokušati da zatvori što više kutije za redom, ali će
+      koristiti minimaks pristup sa alfa-beta odsecanjem ne bi li odlučio da li
+      je isplativije "žrtvovati" određenu kutiju radi više poena kasnije.
+      Ukoliko ne postoje linije koje zatvaraju kutije, odabraće neku drugu
+      liniju koja ne omogućava protivniku da zatvori kutiju. Ukoliko ne postoji
+      ni takva linija, odabraće neku drugu liniju nasumično.`
+  }
+
   _getMapFromGameState(gameState: GameState): Map {
     const rows = gameState.getRows();
     const cols = gameState.getCols();
