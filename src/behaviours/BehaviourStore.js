@@ -32,7 +32,10 @@ class BehaviourStore extends ReduceStore {
 
   reduce(state: Object, action: Object) {
     this.getDispatcher().waitFor([GameStore.getDispatchToken()]);
-    if (GameStore.getUIState() !== UIStates.GAME) {
+    if (
+      GameStore.getUIState() !== UIStates.GAME ||
+      GameStore.isGameComplete()
+    ) {
       return state;
     }
     switch (action.type) {
