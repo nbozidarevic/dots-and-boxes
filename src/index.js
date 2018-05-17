@@ -8,4 +8,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Root from './components/Root.react';
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const root = document.getElementById('root');
+if (root) {
+  ReactDOM.render(<Root />, root);
+}

@@ -37,6 +37,8 @@ const DIR = [
   {row: 0, col: -1}, // Directions.LEFT
 ];
 
+const MAX_RECURSION_DEPTH = 20;
+
 /**
  * Algorithm Flow:
  * - Find all the chains that can be completed, along with their length and
@@ -275,10 +277,26 @@ export default class OptimizingGreedy extends SmartGreedy {
     return 0;
   }
 
-  run(gameState: GameState): ?Line {
-    const rows = gameState.getRows();
-    const cols = gameState.getCols();
-    const map = this._getMapFromGameState(gameState);
+  /**
+   * This function performs various checks in order to pick the optimal line to
+   * select. In case there is a single optimal line, the function will continue
+   * executing recursively in order to count the score the player can get. If
+   * there are multiple options, the recursive minimax algorithm will be applied
+   * instead.
+   */
+  _runMinimax(originalGameState: GameState, currentMap: Map, depth: number = 1): {
+    line: ?Line,
+    maxScore: number,
+  } {
+    if (depth >= MAX_RECURSION_DEPTH) {
+      return {
+        line: null,
+        maxScore: 0,
+      };
+    }
+
+    const rows = originalGameState.getRows();
+    const cols = originalGameState.getCols();
 
     /**
      * If there are adjacent boxes with 3 or 4 unused lines, choose the line
@@ -286,26 +304,45 @@ export default class OptimizingGreedy extends SmartGreedy {
      * is in between the two boxes from the condition. This way, we are not
      * providing any opportunities for the oponent to complete a box.
      */
-
-    let line;
     const linesByBoxAvailableLineCount =
-      this._getLinesGroupedByBoxAvailableLineCount(map, rows, cols);
+      this._getLinesGroupedByBoxAvailableLineCount(currentMap, rows, cols);
     if (
       linesByBoxAvailableLineCount[3].length +
         linesByBoxAvailableLineCount[4].length > 0
     ) {
+      let line;
       if (linesByBoxAvailableLineCount[1].length > 0) {
         line = linesByBoxAvailableLineCount[1][0];
+        if (currentMap[line.row] && currentMap[line.row][line.col]) {
+          currentMap[line.row][line.col][line.direction] = true;
+        }
+        if (currentMap[line.row + DIR[line.direction].row] && currentMap[line.row + DIR[line.direction].row][line.col + DIR[line.direction].col]) {
+          currentMap[line.row + DIR[line.direction].row][line.col + DIR[line.direction].col][(line.direction + 2) % 4] = true;
+        }
+        return {
+          line: originalGameState.getLine(line.row, line.col, line.direction),
+          maxScore: 1 + this._runMinimax(originalGameState, currentMap, depth + 1).maxScore,
+        };
       } else {
         line = [
           ...linesByBoxAvailableLineCount[3],
           ...linesByBoxAvailableLineCount[4],
         ][0];
+        if (currentMap[line.row] && currentMap[line.row][line.col]) {
+          currentMap[line.row][line.col][line.direction] = true;
+        }
+        if (currentMap[line.row + DIR[line.direction].row] && currentMap[line.row + DIR[line.direction].row][line.col + DIR[line.direction].col]) {
+          currentMap[line.row + DIR[line.direction].row][line.col + DIR[line.direction].col][(line.direction + 2) % 4] = true;
+        }
+        return {
+          line: originalGameState.getLine(line.row, line.col, line.direction),
+          maxScore: 0,
+        };
       }
-      return gameState.getLine(line.row, line.col, line.direction);
     }
 
     let box;
+    let line;
 
     /**
      * Chains are a sequence of boxes where the first one can be completed,
@@ -314,45 +351,71 @@ export default class OptimizingGreedy extends SmartGreedy {
      * Depending on the number of chains and their type, we might choose to not
      * complete then if it is the optimal tactic.
      */
-    const chains = this._getAllChains(this._cloneMap(map), rows, cols);
-
-    // If there is an open chain that is not of length 2, use it
-    if (chains.open.length > 0) {
-      if (chains.open[0].length > 2) {
-        box = chains.open[0];
-        return this._getLineForBox(gameState, box.row, box.col);
-      } else if (chains.open[chains.open.length - 1].length < 2) {
-        box = chains.open[chains.open.length - 1];
-        return this._getLineForBox(gameState, box.row, box.col);
-      }
-    }
-    // If there is a closed chain that is not of length 4, use it
-    if (chains.closed.length > 0) {
-      if (chains.closed[0].length > 4) {
-        box = chains.closed[0];
-        return this._getLineForBox(gameState, box.row, box.col);
-      } else if (chains.closed[chains.closed.length - 1].length < 4) {
-        box = chains.closed[chains.closed.length - 1];
-        return this._getLineForBox(gameState, box.row, box.col);
-      }
-    }
-
-    // If there are multiple chains, select a line in the longest one.
+    const chains = this._getAllChains(this._cloneMap(currentMap), rows, cols);
     const allChains = [
       ...chains.closed,
       ...chains.open,
     ].sort(this._chainComparator);
-    if (allChains.length > 1) {
+
+    // If there is an open chain that is not of length 2, use it
+    // OR
+    // If there is a closed chain that is not of length 4, use it
+    // OR
+    // If there are multiple chains, select a line in the longest one.
+    if (chains.open.length > 0) {
+      if (chains.open[0].length > 2) {
+        box = chains.open[0];
+        line = this._getLineForBox(originalGameState, box.row, box.col);
+      } else if (chains.open[chains.open.length - 1].length < 2) {
+        box = chains.open[chains.open.length - 1];
+        line = this._getLineForBox(originalGameState, box.row, box.col);
+      }
+    } else if (chains.closed.length > 0) {
+      if (chains.closed[0].length > 4) {
+        box = chains.closed[0];
+        line = this._getLineForBox(originalGameState, box.row, box.col);
+      } else if (chains.closed[chains.closed.length - 1].length < 4) {
+        box = chains.closed[chains.closed.length - 1];
+        line = this._getLineForBox(originalGameState, box.row, box.col);
+      }
+    } else if (allChains.length > 1) {
       box = allChains[0];
-      return this._getLineForBox(gameState, box.row, box.col);
+      line = this._getLineForBox(originalGameState, box.row, box.col);
+    }
+
+    if (line) {
+      if (currentMap[line.getRow()] && currentMap[line.getRow()][line.getCol()]) {
+        currentMap[line.getRow()][line.getCol()][line.getDirection()] = true;
+      }
+      if (currentMap[line.getRow() + DIR[line.getDirection()].row] && currentMap[line.getRow() + DIR[line.getDirection()].row][line.getCol() + DIR[line.getDirection()].col]) {
+        currentMap[line.getRow() + DIR[line.getDirection()].row][line.getCol() + DIR[line.getDirection()].col][(line.getDirection() + 2) % 4] = true;
+      }
+      return {
+        line,
+        maxScore: 1 + this._runMinimax(originalGameState, currentMap, depth + 1).maxScore,
+      };
     }
 
     // At this point, either all boxes are missing two lines, or we are left
     // with only one chain which is either open and of length 2, or closed and
     // of length 4.
-    if (allChains.length === 1) {
-      return this._getLineForBox(gameState, allChains[0].row, allChains[0].col);
+    // if (allChains.length === 1) {
+    //   return this._getLineForBox(originalGameState, allChains[0].row, allChains[0].col);
+    // }
+    return {
+      line: super.run(originalGameState),
+      maxScore: 0,
     }
-    return super.run(gameState);
+  }
+
+  /**
+   * Tries to find the best line to select using the minimax algorithm.
+   */
+  run(gameState: GameState): ?Line {
+    const line = this._runMinimax(
+      gameState,
+      this._getMapFromGameState(gameState),
+    ).line;
+    return line ? line : super.run(gameState);
   }
 }
