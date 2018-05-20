@@ -19,7 +19,7 @@ import {ReduceStore} from 'flux/utils';
 import SmartGreedy from './SmartGreedy';
 import UIStates from '../constants/UIStates';
 
-const MIN_MOVE_TIME = 100; // ms
+const MIN_MOVE_TIME = 200; // ms
 
 class BehaviourStore extends ReduceStore {
   constructor() {

@@ -37,7 +37,7 @@ const DIR = [
   {row: 0, col: -1}, // Directions.LEFT
 ];
 
-const MAX_RECURSION_DEPTH = 20;
+const MAX_RECURSION_DEPTH = 5;
 
 /**
  * Algorithm Flow:
@@ -399,9 +399,56 @@ export default class OptimizingGreedy extends SmartGreedy {
     // At this point, either all boxes are missing two lines, or we are left
     // with only one chain which is either open and of length 2, or closed and
     // of length 4.
-    // if (allChains.length === 1) {
-    //   return this._getLineForBox(originalGameState, allChains[0].row, allChains[0].col);
-    // }
+    let bestChoice;
+    for (let i = 0; i < rows; ++i) {
+      for (let j = 0; j < cols; ++j) {
+        let availableLines = 0;
+        currentMap[i][j].forEach(selectedLine => {
+          if (!selectedLine) {
+            ++availableLines;
+          }
+        });
+        for (let k = 0; k < 4; ++k) {
+          if (currentMap[i][j][k]) {
+            continue;
+          }
+          if (
+            k === Directions.UP ||
+            k == Directions.LEFT ||
+            (k === Directions.DOWN && i === rows - 1) ||
+            (k === Directions.RIGHT && j === cols -1)
+          ) {
+            const nextMap = this._cloneMap(currentMap);
+            nextMap[i][j][k] = true;
+            if (nextMap[i + DIR[k].row] && nextMap[i + DIR[k].row][j + DIR[k].col]) {
+              nextMap[i + DIR[k].row][j + DIR[k].col][(k + 2) % 4] = true;
+            }
+            // Mark the current line
+            // Do the recursion
+            let choice;
+            if (availableLines === 1) {
+              choice = {
+                line: originalGameState.getLine(i, j, k),
+                maxScore: 1 + this._runMinimax(originalGameState, nextMap, depth + 1).maxScore,
+              }
+            } else {
+              choice = {
+                line: originalGameState.getLine(i, j, k),
+                maxScore: -this._runMinimax(originalGameState, nextMap, depth + 1).maxScore,
+              }
+            }
+            if (!bestChoice || choice.maxScore > bestChoice.maxScore) {
+              bestChoice = choice;
+            }
+          }
+        }
+      }
+    }
+
+    if (bestChoice) {
+      return bestChoice;
+    }
+
     return {
       line: super.run(originalGameState),
       maxScore: 0,
