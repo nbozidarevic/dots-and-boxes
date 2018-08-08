@@ -10,6 +10,7 @@ const UIStates = {
   HOME: 'home',
   GAME: 'game',
   COMPLETED: 'completed',
+  SIMULATION: 'simulation',
 };
 
 export default UIStates;

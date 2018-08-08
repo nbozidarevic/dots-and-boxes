@@ -63,6 +63,11 @@ class HomeScreen extends React.Component<{}, State> {
             value="Kreni"
             onClick={this._startGame}
           />
+          <input
+            type="button"
+            value="Simuliraj"
+            onClick={this._startSimulation}
+          />
         </div>
         <div className="desc">
           Protivnici:
@@ -143,6 +148,11 @@ class HomeScreen extends React.Component<{}, State> {
   _startGame = () => {
     const {rows, cols, player_one, player_two} = this.state;
     Actions.startGame(rows, cols, player_one, player_two);
+  };
+
+  _startSimulation = () => {
+    const {rows, cols, player_one, player_two} = this.state;
+    Actions.startSimulation(rows, cols, player_one, player_two);
   };
 }
 

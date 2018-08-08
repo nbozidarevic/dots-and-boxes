@@ -32,16 +32,35 @@ class BehaviourStore extends ReduceStore {
 
   reduce(state: Object, action: Object) {
     this.getDispatcher().waitFor([GameStore.getDispatchToken()]);
-    if (
-      GameStore.getUIState() !== UIStates.GAME ||
-      GameStore.isGameComplete()
-    ) {
+
+    const uiState = GameStore.getUIState();
+    if (uiState === UIStates.COMPLETED || uiState === UIStates.HOME) {
       return state;
     }
+
+    if (GameStore.isGameComplete()) {
+      if (uiState === UIStates.GAME) {
+        return state;
+      }
+      if (uiState === UIStates.SIMULATION) {
+        if (GameStore.getRemainingSimulations() > 0) {
+          setTimeout(Actions.startNextSimulation);
+        }
+        return state;
+      }
+    }
+
     switch (action.type) {
       case ActionTypes.SELECT_LINE:
       case ActionTypes.START_GAME:
+      case ActionTypes.START_SIMULATION:
         setTimeout(() => this.run(GameStore.getGameState()));
+        break;
+      case ActionTypes.START_NEXT_SIMULATION:
+        if (GameStore.getRemainingSimulations() > 0) {
+          setTimeout(() => this.run(GameStore.getGameState()));
+        }
+        break;
     }
     return state;
   }
@@ -62,7 +81,10 @@ class BehaviourStore extends ReduceStore {
       line.getDirection()
     );
 
-    if (elapsedTime < MIN_MOVE_TIME) {
+    if (
+      elapsedTime < MIN_MOVE_TIME &&
+      GameStore.getUIState() !== UIStates.SIMULATION
+    ) {
       setTimeout(selectLine, MIN_MOVE_TIME - elapsedTime);
     } else {
       selectLine();

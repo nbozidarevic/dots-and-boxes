@@ -25,6 +25,27 @@ const Actions = {
     });
   },
 
+  startSimulation(
+    rows: number,
+    cols: number,
+    player_one: Character,
+    player_two: Character,
+  ) {
+    Dispatcher.dispatch({
+      type: ActionTypes.START_SIMULATION,
+      rows,
+      cols,
+      player_one,
+      player_two,
+    });
+  },
+
+  startNextSimulation() {
+    Dispatcher.dispatch({
+      type: ActionTypes.START_NEXT_SIMULATION,
+    });
+  },
+
   selectLine(row: number, col: number, direction: Direction) {
     Dispatcher.dispatch({
       type: ActionTypes.SELECT_LINE,

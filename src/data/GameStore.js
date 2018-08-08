@@ -19,10 +19,13 @@ import UIStates, {type UIState} from '../constants/UIStates';
 
 const State = Record({
   gameState: null,
+  remainingSimulations: 0,
   uiState: UIStates.HOME,
 });
 
 class GameStore extends ReduceStore {
+  results: Array<Array<number>> = [];
+
   constructor() {
     super(Dispatcher);
   }
@@ -46,6 +49,16 @@ class GameStore extends ReduceStore {
           action.player_one,
           action.player_two,
         );
+      case ActionTypes.START_SIMULATION:
+      this.results = [];
+        return this.startSimulation(
+          action.rows,
+          action.cols,
+          action.player_one,
+          action.player_two,
+        );
+      case ActionTypes.START_NEXT_SIMULATION:
+        return this.startNextSimulation();
       default:
         return state;
     }
@@ -59,7 +72,68 @@ class GameStore extends ReduceStore {
   ): State {
     return new State({
       gameState: new GameState(rows, cols, player_one, player_two),
+      remainingSimulations: 0,
       uiState: UIStates.GAME,
+    });
+  }
+
+  startSimulation(
+    rows: number,
+    cols: number,
+    player_one: Character,
+    player_two: Character,
+  ): State {
+    return new State({
+      gameState: new GameState(rows, cols, player_one, player_two),
+      remainingSimulations: 100,
+      uiState: UIStates.SIMULATION,
+    });
+  }
+
+  startNextSimulation(): State {
+    const state = this.getState();
+    let {gameState, remainingSimulations, uiState} = state;
+
+    this.results.push(gameState.getScore());
+
+    --remainingSimulations;
+    if (remainingSimulations > 0) {
+      gameState = new GameState(
+        gameState.getRows(),
+        gameState.getCols(),
+        gameState.getPlayers()[0],
+        gameState.getPlayers()[1],
+      );
+    } else {
+      const wins = [0, 0];
+      const avg = [0, 0];
+      const perc = [0, 0];
+
+      this.results.forEach(result => {
+        avg[0] += result[0];
+        avg[1] += result[1];
+        if (result[0] > result[1]) {
+          ++wins[0];
+        } else if (result[0] < result[1]) {
+          ++wins[1];
+        }
+      });
+
+      avg[0] /= this.results.length;
+      avg[1] /= this.results.length;
+      perc[0] = wins[0] / this.results.length * 100;
+      perc[1] = wins[1] / this.results.length * 100;
+
+      console.log(this.results);
+      console.log(wins);
+      console.log(avg);
+      console.log(perc);
+    }
+
+    return new State({
+      gameState,
+      remainingSimulations,
+      uiState,
     });
   }
 
@@ -130,6 +204,10 @@ class GameStore extends ReduceStore {
 
   getGameState(): GameState {
     return this.getState().gameState;
+  }
+
+  getRemainingSimulations(): number {
+    return this.getState().remainingSimulations;
   }
 }
 

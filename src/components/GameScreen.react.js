@@ -53,7 +53,7 @@ class GameScreen extends React.Component<{}, State> {
   }
 
   static isValidUIState(uiState: UIState): boolean {
-    return uiState === UIStates.GAME || uiState === UIStates.COMPLETED;
+    return uiState === UIStates.GAME || uiState === UIStates.SIMULATION || uiState === UIStates.COMPLETED;
   }
 
   componentDidMount() {
@@ -66,7 +66,7 @@ class GameScreen extends React.Component<{}, State> {
 
   render() {
     const {uiState} = this.state;
-    if (uiState !== UIStates.GAME && uiState !== UIStates.COMPLETED) {
+    if (uiState === UIStates.HOME) {
       return null;
     }
     return (
