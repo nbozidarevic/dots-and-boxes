@@ -151,24 +151,6 @@ export default class OptimizingGreedy extends SmartGreedy {
     return counts;
   }
 
-  // _getBoxesGroupedByAvailableLineCount(
-  //   map: Map,
-  // ): Array<Array<{row: number, col: number}>> {
-  //   const counts = [[], [], [], [], []];
-  //   map.forEach(
-  //     (boxes, row) => {
-  //       boxes.forEach(
-  //         (box, col) => {
-  //           counts[
-  //             box.filter(selectedLine => !selectedLine).length
-  //           ].push({row, col});
-  //         },
-  //       );
-  //     },
-  //   );
-  //   return counts;
-  // }
-
   _getLineForBox(
     gameState: GameState,
     row: number,
@@ -312,7 +294,7 @@ export default class OptimizingGreedy extends SmartGreedy {
     ) {
       let line;
       if (linesByBoxAvailableLineCount[1].length > 0) {
-        line = linesByBoxAvailableLineCount[1][0];
+        line = linesByBoxAvailableLineCount[1].sort(() => 0.5 - Math.random())[0];
         if (currentMap[line.row] && currentMap[line.row][line.col]) {
           currentMap[line.row][line.col][line.direction] = true;
         }
@@ -327,7 +309,7 @@ export default class OptimizingGreedy extends SmartGreedy {
         line = [
           ...linesByBoxAvailableLineCount[3],
           ...linesByBoxAvailableLineCount[4],
-        ][0];
+        ].sort(() => 0.5 - Math.random())[0];
         if (currentMap[line.row] && currentMap[line.row][line.col]) {
           currentMap[line.row][line.col][line.direction] = true;
         }
