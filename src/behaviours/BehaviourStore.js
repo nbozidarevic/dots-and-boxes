@@ -66,6 +66,10 @@ class BehaviourStore extends ReduceStore {
   }
 
   run(gameState: GameState) {
+    if (GameStore.getCurrentCharacter() === Characters.HUMAN) {
+      return;
+    }
+
     const startTime = performance.now();
     const line =
       this.getBehaviour(GameStore.getCurrentCharacter()).run(gameState);
